@@ -72,6 +72,18 @@ env_base.Prepend(CPPPATH=["#"])
 
 env = env_base.Clone()
 
+use_compile_db = True
+
+if use_compile_db:
+    # Generating the compilation DB (`compile_commands.json`) requires SCons 4.0.0 or later.
+    from SCons import __version__ as scons_raw_version
+
+    scons_ver = env._get_major_minor_revision(scons_raw_version)
+
+    if scons_ver >= (4, 0, 0):
+        env.Tool("compilation_db")
+        env.Alias("compiledb", env.CompilationDatabase())
+
 # Environment flags
 CCFLAGS = env.get("CCFLAGS", "")
 env["CCFLAGS"] = ""
