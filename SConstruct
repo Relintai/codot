@@ -66,6 +66,8 @@ env_base["x86_libtheora_opt_vc"] = False
 # avoid issues when building with different versions of python out of the same directory
 env_base.SConsignFile(".sconsign{0}.dblite".format(pickle.HIGHEST_PROTOCOL))
 
+env_base.Prepend(CPPPATH=["#"])
+
 # Build options
 
 env = env_base.Clone()

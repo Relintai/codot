@@ -30,34 +30,38 @@
 
 #include "math_funcs.h"
 
-#include "core/error_macros.h"
+//#include "core/error_macros.h"
 
-RandomPCG Math::default_rand(RandomPCG::DEFAULT_SEED, RandomPCG::DEFAULT_INC);
+//RandomPCG math_default_rand(RandomPCG::DEFAULT_SEED, RandomPCG::DEFAULT_INC);
 
 #define PHI 0x9e3779b9
 
-uint32_t Math::rand_from_seed(uint64_t *seed) {
+uint32_t math_rand_from_seed(uint64_t *seed) {
+	/*
 	RandomPCG rng = RandomPCG(*seed, RandomPCG::DEFAULT_INC);
 	uint32_t r = rng.rand();
 	*seed = rng.get_seed();
 	return r;
+	*/
+	return 0;
 }
 
-void Math::seed(uint64_t x) {
-	default_rand.seed(x);
+void math_seed(uint64_t x) {
+	//default_rand.seed(x);
 }
 
-void Math::randomize() {
-	default_rand.randomize();
+void math_randomize() {
+	//default_rand.randomize();
 }
 
-uint32_t Math::rand() {
-	return default_rand.rand();
+uint32_t math_rand() {
+	//return default_rand.rand();
+	return 0;
 }
 
-int Math::step_decimals(double p_step) {
+int math_step_decimals(double p_step) {
 	static const int maxn = 10;
-	static const double sd[maxn] = {
+	static const double sd[10] = {
 		0.9999, // somehow compensate for floating point error
 		0.09999,
 		0.009999,
@@ -70,7 +74,7 @@ int Math::step_decimals(double p_step) {
 		0.0000000009999
 	};
 
-	double abs = Math::abs(p_step);
+	double abs = math_absd(p_step);
 	double decs = abs - (int)abs; // Strip away integer part
 	for (int i = 0; i < maxn; i++) {
 		if (decs >= sd[i]) {
@@ -83,17 +87,17 @@ int Math::step_decimals(double p_step) {
 
 // Only meant for editor usage in float ranges, where a step of 0
 // means that decimal digits should not be limited in String::num.
-int Math::range_step_decimals(double p_step) {
+int math_range_step_decimals(double p_step) {
 	if (p_step < 0.0000000000001) {
 		return 16; // Max value hardcoded in String::num
 	}
 	return step_decimals(p_step);
 }
 
-double Math::dectime(double p_value, double p_amount, double p_step) {
-	WARN_DEPRECATED_MSG("The `dectime()` function has been deprecated and will be removed in Godot 4.0. Use `move_toward()` instead.");
+double math_dectime(double p_value, double p_amount, double p_step) {
+	//WARN_DEPRECATED_MSG("The `dectime()` function has been deprecated and will be removed in Godot 4.0. Use `move_toward()` instead.");
 	double sgn = p_value < 0 ? -1.0 : 1.0;
-	double val = Math::abs(p_value);
+	double val = math_absd(p_value);
 	val -= p_amount * p_step;
 	if (val < 0.0) {
 		val = 0.0;
@@ -101,7 +105,7 @@ double Math::dectime(double p_value, double p_amount, double p_step) {
 	return val * sgn;
 }
 
-double Math::ease(double p_x, double p_c) {
+double math_ease(double p_x, double p_c) {
 	if (p_x < 0) {
 		p_x = 0;
 	} else if (p_x > 1.0) {
@@ -109,31 +113,38 @@ double Math::ease(double p_x, double p_c) {
 	}
 	if (p_c > 0) {
 		if (p_c < 1.0) {
-			return 1.0 - Math::pow(1.0 - p_x, 1.0 / p_c);
+			return 1.0 - math_powd(1.0 - p_x, 1.0 / p_c);
 		} else {
-			return Math::pow(p_x, p_c);
+			return math_powd(p_x, p_c);
 		}
 	} else if (p_c < 0) {
 		//inout ease
 
 		if (p_x < 0.5) {
-			return Math::pow(p_x * 2.0, -p_c) * 0.5;
+			return math_powd(p_x * 2.0, -p_c) * 0.5;
 		} else {
-			return (1.0 - Math::pow(1.0 - (p_x - 0.5) * 2.0, -p_c)) * 0.5 + 0.5;
+			return (1.0 - math_powd(1.0 - (p_x - 0.5) * 2.0, -p_c)) * 0.5 + 0.5;
 		}
 	} else {
 		return 0; // no ease (raw)
 	}
 }
 
-double Math::stepify(double p_value, double p_step) {
+float math_stepifyf(float p_value, float p_step) {
 	if (p_step != 0) {
-		p_value = Math::floor(p_value / p_step + 0.5) * p_step;
+		p_value = math_floorf(p_value / p_step + 0.5) * p_step;
 	}
 	return p_value;
 }
 
-uint32_t Math::larger_prime(uint32_t p_val) {
+double math_stepifyd(double p_value, double p_step) {
+	if (p_step != 0) {
+		p_value = math_floord(p_value / p_step + 0.5) * p_step;
+	}
+	return p_value;
+}
+
+uint32_t math_larger_prime(uint32_t p_val) {
 	static const uint32_t primes[] = {
 		5,
 		13,
@@ -169,7 +180,7 @@ uint32_t Math::larger_prime(uint32_t p_val) {
 
 	int idx = 0;
 	while (true) {
-		ERR_FAIL_COND_V(primes[idx] == 0, 0);
+		//ERR_FAIL_COND_V(primes[idx] == 0, 0);
 		if (primes[idx] > p_val) {
 			return primes[idx];
 		}
@@ -177,10 +188,14 @@ uint32_t Math::larger_prime(uint32_t p_val) {
 	}
 }
 
-double Math::random(double from, double to) {
-	return default_rand.random(from, to);
+double math_randomd(double from, double to) {
+	//return default_rand.random(from, to);
+
+	return 0;
 }
 
-float Math::random(float from, float to) {
-	return default_rand.random(from, to);
+float math_randomf(float from, float to) {
+	//return default_rand.random(from, to);
+
+	return 0;
 }
