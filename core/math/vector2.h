@@ -35,14 +35,14 @@
 
 struct Vector2i;
 
-struct _NO_DISCARD_CLASS_ Vector2 {
-	static const int AXIS_COUNT = 2;
+static const int VECTOR2_AXIS_COUNT = 2;
 
-	enum Axis {
-		AXIS_X,
-		AXIS_Y,
-	};
+enum Vector2Axis {
+	VECTOR2_AXIS_X,
+	VECTOR2_AXIS_Y,
+};
 
+typedef struct _NO_DISCARD_CLASS_ Vector2 {
 	union {
 		struct {
 			union {
@@ -57,122 +57,161 @@ struct _NO_DISCARD_CLASS_ Vector2 {
 
 		real_t coord[2];
 	};
+} Vector2;
 
-	_FORCE_INLINE_ real_t &operator[](int p_idx) {
-		DEV_ASSERT((unsigned int)p_idx < 2);
-		return coord[p_idx];
-	}
-	_FORCE_INLINE_ const real_t &operator[](int p_idx) const {
-		DEV_ASSERT((unsigned int)p_idx < 2);
-		return coord[p_idx];
-	}
+_FORCE_INLINE_ real_t vector2_get_axis(const Vector2 *v, int p_idx) {
+	//DEV_ASSERT((unsigned int)p_idx < 2);
+	return v->coord[p_idx];
+}
 
-	_FORCE_INLINE_ void set_all(real_t p_value) {
-		x = y = p_value;
-	}
+/*
+//not needed
+_FORCE_INLINE_ const real_t &operator[](int p_idx) const {
+	DEV_ASSERT((unsigned int)p_idx < 2);
+	return coord[p_idx];
+}
+*/
 
-	_FORCE_INLINE_ int min_axis() const {
-		return x < y ? 0 : 1;
-	}
+_FORCE_INLINE_ void vector2_set_all(Vector2 *self, real_t p_value) {
+	self->x = self->y = p_value;
+}
 
-	_FORCE_INLINE_ int max_axis() const {
-		return x < y ? 1 : 0;
-	}
+_FORCE_INLINE_ void vector2_set(Vector2 *self, real_t p_value_x, real_t p_value_y) {
+	self->x = p_value_x;
+	self->y = p_value_y;
+}
 
-	void normalize();
-	Vector2 normalized() const;
-	bool is_normalized() const;
+_FORCE_INLINE_ int vector2_min_axis(const Vector2 *v) {
+	return v->x < v->y ? 0 : 1;
+}
 
-	real_t length() const;
-	real_t length_squared() const;
+_FORCE_INLINE_ int vector2_max_axis(const Vector2 *v) {
+	return v->x < v->y ? 1 : 0;
+}
 
-	real_t distance_to(const Vector2 &p_vector2) const;
-	real_t distance_squared_to(const Vector2 &p_vector2) const;
-	real_t angle_to(const Vector2 &p_vector2) const;
-	real_t angle_to_point(const Vector2 &p_vector2) const;
-	_FORCE_INLINE_ Vector2 direction_to(const Vector2 &p_to) const;
+real_t length(const Vector2 *v);
+real_t length_squared(const Vector2 *v);
 
-	real_t dot(const Vector2 &p_other) const;
-	real_t cross(const Vector2 &p_other) const;
-	Vector2 posmod(const real_t p_mod) const;
-	Vector2 posmodv(const Vector2 &p_modv) const;
-	Vector2 project(const Vector2 &p_to) const;
+void vector2_normalize(Vector2 *v);
+Vector2 vector2_normalized(Vector2 v);
+bool vector2_is_normalized(const Vector2 *v);
 
-	Vector2 plane_project(real_t p_d, const Vector2 &p_vec) const;
+real_t dot(const Vector2 *self, const Vector2 *p_other);
+real_t cross(const Vector2 *self, const Vector2 *p_other);
 
-	Vector2 clamped(real_t p_len) const;
-	Vector2 limit_length(const real_t p_len = 1.0) const;
+real_t vector2_distance_to(const Vector2 *self, const Vector2 *p_vector2);
+real_t vector2_distance_squared_to(const Vector2 *self, const Vector2 *p_vector2);
+real_t vector2_angle_to(const Vector2 *self, const Vector2 *p_vector2);
+real_t vector2_angle_to_point(const Vector2 *self, const Vector2 *p_vector2);
 
-	_FORCE_INLINE_ static Vector2 linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real_t p_weight);
-	_FORCE_INLINE_ Vector2 linear_interpolate(const Vector2 &p_to, real_t p_weight) const;
-	_FORCE_INLINE_ Vector2 slerp(const Vector2 &p_to, real_t p_weight) const;
-	Vector2 cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight) const;
-	Vector2 move_toward(const Vector2 &p_to, const real_t p_delta) const;
+_FORCE_INLINE_ Vector2 vector2_direction_to(const Vector2 *self, const Vector2 *p_to) {
+	Vector2 ret;
+	vector2_set(&ret, p_to->x - self->x, p_to->y - self->y);
 
-	Vector2 slide(const Vector2 &p_normal) const;
-	Vector2 bounce(const Vector2 &p_normal) const;
-	Vector2 reflect(const Vector2 &p_normal) const;
+	vector2_normalize(&ret);
 
-	bool is_equal_approx(const Vector2 &p_v) const;
+	return ret;
+}
 
-	Vector2 operator+(const Vector2 &p_v) const;
-	void operator+=(const Vector2 &p_v);
-	Vector2 operator-(const Vector2 &p_v) const;
-	void operator-=(const Vector2 &p_v);
-	Vector2 operator*(const Vector2 &p_v1) const;
+/*
 
-	Vector2 operator*(const real_t &rvalue) const;
-	void operator*=(const real_t &rvalue);
-	void operator*=(const Vector2 &rvalue) { *this = *this * rvalue; }
 
-	Vector2 operator/(const Vector2 &p_v1) const;
+Vector2 posmod(const real_t p_mod);
+Vector2 posmodv(const Vector2 &p_modv);
+Vector2 project(const Vector2 &p_to);
 
-	Vector2 operator/(const real_t &rvalue) const;
+Vector2 plane_project(real_t p_d, const Vector2 &p_vec);
 
-	void operator/=(const real_t &rvalue);
-	void operator/=(const Vector2 &rvalue) { *this = *this / rvalue; }
+Vector2 clamped(real_t p_len);
+Vector2 limit_length(const real_t p_len = 1.0);
 
-	Vector2 operator-() const;
+_FORCE_INLINE_ static Vector2 linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real_t p_weight);
+_FORCE_INLINE_ Vector2 linear_interpolate(const Vector2 &p_to, real_t p_weight);
+_FORCE_INLINE_ Vector2 slerp(const Vector2 &p_to, real_t p_weight);
+Vector2 cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight);
+Vector2 move_toward(const Vector2 &p_to, const real_t p_delta);
 
-	bool operator==(const Vector2 &p_vec2) const;
-	bool operator!=(const Vector2 &p_vec2) const;
+Vector2 slide(const Vector2 &p_normal);
+Vector2 bounce(const Vector2 &p_normal);
+Vector2 reflect(const Vector2 &p_normal);
 
-	bool operator<(const Vector2 &p_vec2) const { return x == p_vec2.x ? (y < p_vec2.y) : (x < p_vec2.x); }
-	bool operator>(const Vector2 &p_vec2) const { return x == p_vec2.x ? (y > p_vec2.y) : (x > p_vec2.x); }
-	bool operator<=(const Vector2 &p_vec2) const { return x == p_vec2.x ? (y <= p_vec2.y) : (x < p_vec2.x); }
-	bool operator>=(const Vector2 &p_vec2) const { return x == p_vec2.x ? (y >= p_vec2.y) : (x > p_vec2.x); }
+bool is_equal_approx(const Vector2 &p_v);
 
-	real_t angle() const;
+Vector2 operator+(const Vector2 &p_v);
+void operator+=(const Vector2 &p_v);
+Vector2 operator-(const Vector2 &p_v);
+void operator-=(const Vector2 &p_v);
+Vector2 operator*(const Vector2 &p_v1);
 
-	void set_rotation(real_t p_radians) {
-		x = Math::cos(p_radians);
-		y = Math::sin(p_radians);
-	}
+Vector2 operator*(const real_t &rvalue);
+void operator*=(const real_t &rvalue);
+void operator*=(const Vector2 &rvalue) {
+	*this = *this * rvalue;
+}
 
-	_FORCE_INLINE_ Vector2 abs() const {
-		return Vector2(Math::abs(x), Math::abs(y));
-	}
+Vector2 operator/(const Vector2 &p_v1);
 
-	Vector2 rotated(real_t p_by) const;
-	Vector2 tangent() const {
-		return Vector2(y, -x);
-	}
+Vector2 operator/(const real_t &rvalue);
 
-	Vector2 sign() const;
-	Vector2 floor() const;
-	Vector2 ceil() const;
-	Vector2 round() const;
-	Vector2 snapped(const Vector2 &p_by) const;
-	real_t aspect() const { return width / height; }
+void operator/=(const real_t &rvalue);
+void operator/=(const Vector2 &rvalue) {
+	*this = *this / rvalue;
+}
 
-	operator String() const { return String::num(x) + ", " + String::num(y); }
+Vector2 operator-();
 
-	_FORCE_INLINE_ Vector2(real_t p_x, real_t p_y) {
-		x = p_x;
-		y = p_y;
-	}
-	_FORCE_INLINE_ Vector2() { x = y = 0; }
-};
+bool operator==(const Vector2 &p_vec2);
+bool operator!=(const Vector2 &p_vec2);
+
+bool operator<(const Vector2 &p_vec2) const {
+	return x == p_vec2.x ? (y < p_vec2.y) : (x < p_vec2.x);
+}
+bool operator>(const Vector2 &p_vec2) const {
+	return x == p_vec2.x ? (y > p_vec2.y) : (x > p_vec2.x);
+}
+bool operator<=(const Vector2 &p_vec2) const {
+	return x == p_vec2.x ? (y <= p_vec2.y) : (x < p_vec2.x);
+}
+bool operator>=(const Vector2 &p_vec2) const {
+	return x == p_vec2.x ? (y >= p_vec2.y) : (x > p_vec2.x);
+}
+
+real_t angle();
+
+void set_rotation(real_t p_radians) {
+	x = Math::cos(p_radians);
+	y = Math::sin(p_radians);
+}
+
+_FORCE_INLINE_ Vector2 abs() const {
+	return Vector2(Math::abs(x), Math::abs(y));
+}
+
+Vector2 rotated(real_t p_by);
+Vector2 tangent() const {
+	return Vector2(y, -x);
+}
+
+Vector2 sign();
+Vector2 floor();
+Vector2 ceil();
+Vector2 round();
+Vector2 snapped(const Vector2 &p_by);
+real_t aspect() const {
+	return width / height;
+}
+
+operator String() const {
+	return String::num(x) + ", " + String::num(y);
+}
+
+_FORCE_INLINE_ Vector2(real_t p_x, real_t p_y) {
+	x = p_x;
+	y = p_y;
+}
+_FORCE_INLINE_ Vector2() {
+	x = y = 0;
+}
 
 _FORCE_INLINE_ Vector2 Vector2::plane_project(real_t p_d, const Vector2 &p_vec) const {
 	return p_vec - *this * (dot(p_vec) - p_d);
@@ -250,11 +289,7 @@ Vector2 Vector2::slerp(const Vector2 &p_to, real_t p_weight) const {
 	return rotated(theta * p_weight);
 }
 
-Vector2 Vector2::direction_to(const Vector2 &p_to) const {
-	Vector2 ret(p_to.x - x, p_to.y - y);
-	ret.normalize();
-	return ret;
-}
+
 
 Vector2 Vector2::linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real_t p_weight) {
 	Vector2 res = p_a;
@@ -268,7 +303,7 @@ Vector2 Vector2::linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real
 typedef Vector2 Size2;
 typedef Vector2 Point2;
 
-/* INTEGER STUFF */
+// INTEGER STUFF
 
 struct _NO_DISCARD_CLASS_ Vector2i {
 	enum Axis {
@@ -300,27 +335,27 @@ struct _NO_DISCARD_CLASS_ Vector2i {
 		return coord[p_idx];
 	}
 
-	Vector2i operator+(const Vector2i &p_v) const;
+	Vector2i operator+(const Vector2i &p_v);
 	void operator+=(const Vector2i &p_v);
-	Vector2i operator-(const Vector2i &p_v) const;
+	Vector2i operator-(const Vector2i &p_v);
 	void operator-=(const Vector2i &p_v);
-	Vector2i operator*(const Vector2i &p_v1) const;
+	Vector2i operator*(const Vector2i &p_v1);
 
-	Vector2i operator*(const int &rvalue) const;
+	Vector2i operator*(const int &rvalue);
 	void operator*=(const int &rvalue);
 
-	Vector2i operator/(const Vector2i &p_v1) const;
+	Vector2i operator/(const Vector2i &p_v1);
 
-	Vector2i operator/(const int &rvalue) const;
+	Vector2i operator/(const int &rvalue);
 
 	void operator/=(const int &rvalue);
 
-	Vector2i operator-() const;
+	Vector2i operator-();
 	bool operator<(const Vector2i &p_vec2) const { return (x == p_vec2.x) ? (y < p_vec2.y) : (x < p_vec2.x); }
 	bool operator>(const Vector2i &p_vec2) const { return (x == p_vec2.x) ? (y > p_vec2.y) : (x > p_vec2.x); }
 
-	bool operator==(const Vector2i &p_vec2) const;
-	bool operator!=(const Vector2i &p_vec2) const;
+	bool operator==(const Vector2i &p_vec2);
+	bool operator!=(const Vector2i &p_vec2);
 
 	real_t get_aspect() const { return width / (real_t)height; }
 
@@ -343,5 +378,7 @@ struct _NO_DISCARD_CLASS_ Vector2i {
 
 typedef Vector2i Size2i;
 typedef Vector2i Point2i;
+
+*/
 
 #endif // VECTOR2_H

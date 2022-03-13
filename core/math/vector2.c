@@ -30,104 +30,109 @@
 
 #include "vector2.h"
 
-real_t Vector2::angle() const {
-	return Math::atan2(y, x);
+real_t vector2_length(const Vector2 *v) {
+	return math_sqrtf(v->x * v->x + v->y * v->y);
 }
 
-real_t Vector2::length() const {
-	return Math::sqrt(x * x + y * y);
+real_t vector2_length_squared(const Vector2 *v) {
+	return v->x * v->x + v->y * v->y;
 }
 
-real_t Vector2::length_squared() const {
-	return x * x + y * y;
-}
-
-void Vector2::normalize() {
-	real_t l = x * x + y * y;
+void vector2_normalize(Vector2 *v) {
+	real_t l = v->x * v->x + v->y * v->y;
 	if (l != 0) {
-		l = Math::sqrt(l);
-		x /= l;
-		y /= l;
+		l = math_sqrtf(l);
+		v->x /= l;
+		v->y /= l;
 	}
 }
 
-Vector2 Vector2::normalized() const {
-	Vector2 v = *this;
-	v.normalize();
+Vector2 vector2_normalized(Vector2 v) {
+	vector2_normalize(&v);
+
 	return v;
 }
 
-bool Vector2::is_normalized() const {
+bool vector2_is_normalized(const Vector2 *v) {
 	// use length_squared() instead of length() to avoid sqrt(), makes it more stringent.
-	return Math::is_equal_approx(length_squared(), 1, (real_t)UNIT_EPSILON);
+	return math_is_equal_approxft(length_squared(v), 1, (real_t)UNIT_EPSILON);
 }
 
-real_t Vector2::distance_to(const Vector2 &p_vector2) const {
-	return Math::sqrt((x - p_vector2.x) * (x - p_vector2.x) + (y - p_vector2.y) * (y - p_vector2.y));
+real_t vector2_dot(const Vector2 *self, const Vector2 *p_other) {
+	return self->x * p_other->x + self->y * p_other->y;
 }
 
-real_t Vector2::distance_squared_to(const Vector2 &p_vector2) const {
-	return (x - p_vector2.x) * (x - p_vector2.x) + (y - p_vector2.y) * (y - p_vector2.y);
+real_t vector2_cross(const Vector2 *self, const Vector2 *p_other) {
+	return self->x * p_other->y - self->y * p_other->x;
 }
 
-real_t Vector2::angle_to(const Vector2 &p_vector2) const {
-	return Math::atan2(cross(p_vector2), dot(p_vector2));
+
+real_t vector2_distance_to(const Vector2 *self, const Vector2 *p_vector2) {
+	return math_sqrtf((self->x - p_vector2->x) * (self->x - p_vector2->x) + (self->y - p_vector2->y) * (self->y - p_vector2->y));
 }
 
-real_t Vector2::angle_to_point(const Vector2 &p_vector2) const {
-	return Math::atan2(y - p_vector2.y, x - p_vector2.x);
+real_t vector2_distance_squared_to(const Vector2 *self, const Vector2 *p_vector2) {
+	return (self->x - p_vector2->x) * (self->x - p_vector2->x) + (self->y - p_vector2->y) * (self->y - p_vector2->y);
 }
 
-real_t Vector2::dot(const Vector2 &p_other) const {
-	return x * p_other.x + y * p_other.y;
+real_t vector2_angle_to(const Vector2 *self, const Vector2 *p_vector2) {
+	return math_atan2f(cross(self, p_vector2), dot(self, p_vector2));
 }
 
-real_t Vector2::cross(const Vector2 &p_other) const {
-	return x * p_other.y - y * p_other.x;
+real_t vector2_angle_to_point(const Vector2 *self, const Vector2 *p_vector2) {
+	return math_atan2f(self->y - p_vector2->y, self->x - p_vector2->x);
 }
 
-Vector2 Vector2::sign() const {
+
+
+/*
+
+real_t vector2_angle() {
+	return Math::atan2(y, x);
+}
+
+Vector2 vector2_sign() {
 	return Vector2(SGN(x), SGN(y));
 }
 
-Vector2 Vector2::floor() const {
+Vector2 vector2_floor() {
 	return Vector2(Math::floor(x), Math::floor(y));
 }
 
-Vector2 Vector2::ceil() const {
+Vector2 vector2_ceil() {
 	return Vector2(Math::ceil(x), Math::ceil(y));
 }
 
-Vector2 Vector2::round() const {
+Vector2 vector2_round() {
 	return Vector2(Math::round(x), Math::round(y));
 }
 
-Vector2 Vector2::rotated(real_t p_by) const {
+Vector2 vector2_rotated(real_t p_by) {
 	Vector2 v;
 	v.set_rotation(angle() + p_by);
 	v *= length();
 	return v;
 }
 
-Vector2 Vector2::posmod(const real_t p_mod) const {
+Vector2 vector2_posmod(const real_t p_mod) {
 	return Vector2(Math::fposmod(x, p_mod), Math::fposmod(y, p_mod));
 }
 
-Vector2 Vector2::posmodv(const Vector2 &p_modv) const {
+Vector2 vector2_posmodv(const Vector2 &p_modv) {
 	return Vector2(Math::fposmod(x, p_modv.x), Math::fposmod(y, p_modv.y));
 }
 
-Vector2 Vector2::project(const Vector2 &p_to) const {
+Vector2 vector2_project(const Vector2 &p_to) {
 	return p_to * (dot(p_to) / p_to.length_squared());
 }
 
-Vector2 Vector2::snapped(const Vector2 &p_by) const {
+Vector2 vector2_snapped(const Vector2 &p_by) {
 	return Vector2(
 			Math::stepify(x, p_by.x),
 			Math::stepify(y, p_by.y));
 }
 
-Vector2 Vector2::clamped(real_t p_len) const {
+Vector2 vector2_clamped(real_t p_len) {
 	WARN_DEPRECATED_MSG("'Vector2.clamped()' is deprecated because it has been renamed to 'limit_length'.");
 	real_t l = length();
 	Vector2 v = *this;
@@ -139,7 +144,7 @@ Vector2 Vector2::clamped(real_t p_len) const {
 	return v;
 }
 
-Vector2 Vector2::limit_length(const real_t p_len) const {
+Vector2 vector2_limit_length(const real_t p_len) {
 	const real_t l = length();
 	Vector2 v = *this;
 	if (l > 0 && p_len < l) {
@@ -150,7 +155,7 @@ Vector2 Vector2::limit_length(const real_t p_len) const {
 	return v;
 }
 
-Vector2 Vector2::cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight) const {
+Vector2 vector2_cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight) const {
 	Vector2 p0 = p_pre_a;
 	Vector2 p1 = *this;
 	Vector2 p2 = p_b;
@@ -169,7 +174,7 @@ Vector2 Vector2::cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, c
 	return out;
 }
 
-Vector2 Vector2::move_toward(const Vector2 &p_to, const real_t p_delta) const {
+Vector2 vector2_move_toward(const Vector2 &p_to, const real_t p_delta) {
 	Vector2 v = *this;
 	Vector2 vd = p_to - v;
 	real_t len = vd.length();
@@ -177,38 +182,38 @@ Vector2 Vector2::move_toward(const Vector2 &p_to, const real_t p_delta) const {
 }
 
 // slide returns the component of the vector along the given plane, specified by its normal vector.
-Vector2 Vector2::slide(const Vector2 &p_normal) const {
+Vector2 vector2_slide(const Vector2 &p_normal) {
 #ifdef MATH_CHECKS
 	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector2(), "The normal Vector2 must be normalized.");
 #endif
 	return *this - p_normal * this->dot(p_normal);
 }
 
-Vector2 Vector2::bounce(const Vector2 &p_normal) const {
+Vector2 vector2_bounce(const Vector2 &p_normal) {
 	return -reflect(p_normal);
 }
 
-Vector2 Vector2::reflect(const Vector2 &p_normal) const {
+Vector2 vector2_reflect(const Vector2 &p_normal) {
 #ifdef MATH_CHECKS
 	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector2(), "The normal Vector2 must be normalized.");
 #endif
 	return 2 * p_normal * this->dot(p_normal) - *this;
 }
 
-bool Vector2::is_equal_approx(const Vector2 &p_v) const {
+bool vector2_is_equal_approx(const Vector2 &p_v) {
 	return Math::is_equal_approx(x, p_v.x) && Math::is_equal_approx(y, p_v.y);
 }
 
-/* Vector2i */
+// Vector2i
 
-Vector2i Vector2i::operator+(const Vector2i &p_v) const {
+Vector2i Vector2i::operator+(const Vector2i &p_v) {
 	return Vector2i(x + p_v.x, y + p_v.y);
 }
 void Vector2i::operator+=(const Vector2i &p_v) {
 	x += p_v.x;
 	y += p_v.y;
 }
-Vector2i Vector2i::operator-(const Vector2i &p_v) const {
+Vector2i Vector2i::operator-(const Vector2i &p_v) {
 	return Vector2i(x - p_v.x, y - p_v.y);
 }
 void Vector2i::operator-=(const Vector2i &p_v) {
@@ -216,11 +221,11 @@ void Vector2i::operator-=(const Vector2i &p_v) {
 	y -= p_v.y;
 }
 
-Vector2i Vector2i::operator*(const Vector2i &p_v1) const {
+Vector2i Vector2i::operator*(const Vector2i &p_v1) {
 	return Vector2i(x * p_v1.x, y * p_v1.y);
 };
 
-Vector2i Vector2i::operator*(const int &rvalue) const {
+Vector2i Vector2i::operator*(const int &rvalue) {
 	return Vector2i(x * rvalue, y * rvalue);
 };
 void Vector2i::operator*=(const int &rvalue) {
@@ -228,11 +233,11 @@ void Vector2i::operator*=(const int &rvalue) {
 	y *= rvalue;
 };
 
-Vector2i Vector2i::operator/(const Vector2i &p_v1) const {
+Vector2i Vector2i::operator/(const Vector2i &p_v1) {
 	return Vector2i(x / p_v1.x, y / p_v1.y);
 };
 
-Vector2i Vector2i::operator/(const int &rvalue) const {
+Vector2i Vector2i::operator/(const int &rvalue) {
 	return Vector2i(x / rvalue, y / rvalue);
 };
 
@@ -241,13 +246,14 @@ void Vector2i::operator/=(const int &rvalue) {
 	y /= rvalue;
 };
 
-Vector2i Vector2i::operator-() const {
+Vector2i Vector2i::operator-() {
 	return Vector2i(-x, -y);
 }
 
-bool Vector2i::operator==(const Vector2i &p_vec2) const {
+bool Vector2i::operator==(const Vector2i &p_vec2) {
 	return x == p_vec2.x && y == p_vec2.y;
 }
-bool Vector2i::operator!=(const Vector2i &p_vec2) const {
+bool Vector2i::operator!=(const Vector2i &p_vec2) {
 	return x != p_vec2.x || y != p_vec2.y;
 }
+*/
