@@ -90,6 +90,15 @@ static _FORCE_INLINE_ Vector2 vector2_create(real_t p_value_x, real_t p_value_y)
 	return v;
 }
 
+static _FORCE_INLINE_ Vector2 vector2_createv(const Vector2 *other) {
+	Vector2 v;
+
+	v.x = other->x;
+	v.y = other->y;
+
+	return v;
+}
+
 static _FORCE_INLINE_ int vector2_min_axis(const Vector2 *v) {
 	return v->x < v->y ? 0 : 1;
 }
@@ -193,22 +202,25 @@ static _FORCE_INLINE_ Vector2 vector2_abs(const Vector2 *self) {
 }
 
 Vector2 vector2_rotated(const Vector2 *self, real_t p_by);
-Vector2 vector2_tangent(const Vector2 *self) {
+static _FORCE_INLINE_ Vector2 vector2_tangent(const Vector2 *self) {
 	return vector2_create(self->y, -(self->x));
 }
 
+Vector2 vector2_posmod(Vector2 *self, const real_t p_mod);
+Vector2 vector2_posmodv(Vector2 *self, const Vector2 *p_modv);
+Vector2 vector2_project(Vector2 *self, const Vector2 *p_to);
+
+static _FORCE_INLINE_ Vector2 vector2_plane_project(const Vector2 *self, real_t p_d, const Vector2 *p_vec) {
+	Vector2  v = vector2_muls(self, vector2_dot(self, p_vec) - p_d);
+	return vector2_subv(p_vec, &v);
+}
+
+Vector2 vector2_clamped(Vector2 *self, real_t p_len);
+Vector2 vector2_limit_length(Vector2 *self, const real_t p_len);
+Vector2 vector2_limit_length1(Vector2 *self);
+
 
 /*
-
-
-Vector2 posmod(const real_t p_mod);
-Vector2 posmodv(const Vector2 &p_modv);
-Vector2 project(const Vector2 &p_to);
-
-Vector2 plane_project(real_t p_d, const Vector2 &p_vec);
-
-Vector2 clamped(real_t p_len);
-Vector2 limit_length(const real_t p_len = 1.0);
 
 _FORCE_INLINE_ static Vector2 linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real_t p_weight);
 _FORCE_INLINE_ Vector2 linear_interpolate(const Vector2 &p_to, real_t p_weight);
@@ -259,9 +271,6 @@ _FORCE_INLINE_ Vector2() {
 	x = y = 0;
 }
 
-_FORCE_INLINE_ Vector2 Vector2::plane_project(real_t p_d, const Vector2 &p_vec) const {
-	return p_vec - *this * (dot(p_vec) - p_d);
-}
 
 _FORCE_INLINE_ bool Vector2::operator==(const Vector2 &p_vec2) const {
 	return x == p_vec2.x && y == p_vec2.y;

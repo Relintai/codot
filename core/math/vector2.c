@@ -96,6 +96,50 @@ Vector2 vector2_rotated(const Vector2 *self, real_t p_by) {
 	return v;
 }
 
+Vector2 vector2_posmod(Vector2 *self, const real_t p_mod) {
+	return vector2_create(math_fposmodf(self->x, p_mod), math_fposmodf(self->y, p_mod));
+}
+
+Vector2 vector2_posmodv(Vector2 *self, const Vector2 *p_modv) {
+	return vector2_create(math_fposmodf(self->x, p_modv->x), math_fposmodf(self->y, p_modv->y));
+}
+
+Vector2 vector2_project(Vector2 *self, const Vector2 *p_to) {
+	return vector2_muls(p_to, (vector2_dot(self, p_to) / vector2_length_squared(p_to)));
+}
+
+Vector2 vector2_clamped(Vector2 *self, real_t p_len) {
+	//WARN_DEPRECATED_MSG("'Vector2.clamped()' is deprecated because it has been renamed to 'limit_length'.");
+	real_t l = vector2_length(self);
+	Vector2 v = vector2_createv(self);
+	if (l > 0 && p_len < l) {
+		vector2_div_eqs(&v, l);
+		vector2_mul_eqs(&v, p_len);
+	}
+
+	return v;
+}
+
+Vector2 vector2_limit_length(Vector2 *self, const real_t p_len) {
+	const real_t l = vector2_length(self);
+	Vector2 v = vector2_createv(self);
+	if (l > 0 && p_len < l) {
+		vector2_div_eqs(&v, l);
+		vector2_mul_eqs(&v, p_len);
+	}
+
+	return v;
+}
+
+Vector2 vector2_limit_length1(Vector2 *self) {
+	const real_t l = vector2_length(self);
+	Vector2 v = vector2_createv(self);
+	vector2_div_eqs(&v, 1);
+
+	return v;
+}
+
+
 /*
 
 
@@ -116,17 +160,6 @@ Vector2 vector2_round() {
 }
 
 
-Vector2 vector2_posmod(const real_t p_mod) {
-	return Vector2(Math::fposmod(x, p_mod), Math::fposmod(y, p_mod));
-}
-
-Vector2 vector2_posmodv(const Vector2 &p_modv) {
-	return Vector2(Math::fposmod(x, p_modv.x), Math::fposmod(y, p_modv.y));
-}
-
-Vector2 vector2_project(const Vector2 &p_to) {
-	return p_to * (dot(p_to) / p_to.length_squared());
-}
 
 Vector2 vector2_snapped(const Vector2 &p_by) {
 	return Vector2(
@@ -134,28 +167,6 @@ Vector2 vector2_snapped(const Vector2 &p_by) {
 			Math::stepify(y, p_by.y));
 }
 
-Vector2 vector2_clamped(real_t p_len) {
-	WARN_DEPRECATED_MSG("'Vector2.clamped()' is deprecated because it has been renamed to 'limit_length'.");
-	real_t l = length();
-	Vector2 v = *this;
-	if (l > 0 && p_len < l) {
-		v /= l;
-		v *= p_len;
-	}
-
-	return v;
-}
-
-Vector2 vector2_limit_length(const real_t p_len) {
-	const real_t l = length();
-	Vector2 v = *this;
-	if (l > 0 && p_len < l) {
-		v /= l;
-		v *= p_len;
-	}
-
-	return v;
-}
 
 Vector2 vector2_cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight) const {
 	Vector2 p0 = p_pre_a;
