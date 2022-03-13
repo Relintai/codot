@@ -29,6 +29,7 @@
 /*************************************************************************/
 
 #include "math_funcs.h"
+#include <math.h>
 
 //#include "core/error_macros.h"
 
@@ -85,25 +86,6 @@ int math_step_decimals(double p_step) {
 	return 0;
 }
 
-// Only meant for editor usage in float ranges, where a step of 0
-// means that decimal digits should not be limited in String::num.
-int math_range_step_decimals(double p_step) {
-	if (p_step < 0.0000000000001) {
-		return 16; // Max value hardcoded in String::num
-	}
-	return step_decimals(p_step);
-}
-
-double math_dectime(double p_value, double p_amount, double p_step) {
-	//WARN_DEPRECATED_MSG("The `dectime()` function has been deprecated and will be removed in Godot 4.0. Use `move_toward()` instead.");
-	double sgn = p_value < 0 ? -1.0 : 1.0;
-	double val = math_absd(p_value);
-	val -= p_amount * p_step;
-	if (val < 0.0) {
-		val = 0.0;
-	}
-	return val * sgn;
-}
 
 double math_ease(double p_x, double p_c) {
 	if (p_x < 0) {
@@ -128,6 +110,26 @@ double math_ease(double p_x, double p_c) {
 	} else {
 		return 0; // no ease (raw)
 	}
+}
+
+// Only meant for editor usage in float ranges, where a step of 0
+// means that decimal digits should not be limited in String::num.
+int math_range_step_decimals(double p_step) {
+	if (p_step < 0.0000000000001) {
+		return 16; // Max value hardcoded in String::num
+	}
+	return math_step_decimals(p_step);
+}
+
+double math_dectime(double p_value, double p_amount, double p_step) {
+	//WARN_DEPRECATED_MSG("The `dectime()` function has been deprecated and will be removed in Godot 4.0. Use `move_toward()` instead.");
+	double sgn = p_value < 0 ? -1.0 : 1.0;
+	double val = math_absd(p_value);
+	val -= p_amount * p_step;
+	if (val < 0.0) {
+		val = 0.0;
+	}
+	return val * sgn;
 }
 
 float math_stepifyf(float p_value, float p_step) {

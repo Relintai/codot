@@ -365,27 +365,27 @@ static _ALWAYS_INLINE_ float math_roundf(float p_val) {
 }
 
 // double only, as these functions are mainly used by the editor and not performance-critical,
-static double ease(double p_x, double p_c);
-int step_decimals(double p_step);
-static int range_step_decimals(double p_step);
-static double stepify(double p_value, double p_step);
-static double dectime(double p_value, double p_amount, double p_step);
+int math_step_decimals(double p_step);
+static int math_range_step_decimals(double p_step);
+double math_ease(double p_x, double p_c);
+double math_stepify(double p_value, double p_step);
+double math_dectime(double p_value, double p_amount, double p_step);
 
-static uint32_t larger_prime(uint32_t p_val);
+uint32_t math_larger_prime(uint32_t p_val);
 
-static void seed(uint64_t x);
-static void randomize();
-static uint32_t rand_from_seed(uint64_t *seed);
-uint32_t rand();
+void math_seed(uint64_t x);
+void math_randomize();
+uint32_t rand_from_seed(uint64_t *seed);
+uint32_t math_rand();
 static _ALWAYS_INLINE_ double randd() {
-	return (double)rand() / (double)MATH_RANDOM_32BIT_MAX;
+	return (double)math_rand() / (double)MATH_RANDOM_32BIT_MAX;
 }
 static _ALWAYS_INLINE_ float randf() {
-	return (float)rand() / (float)MATH_RANDOM_32BIT_MAX;
+	return (float)math_rand() / (float)MATH_RANDOM_32BIT_MAX;
 }
 
-static double math_randomd(double from, double to);
-static float math_randomf(float from, float to);
+double math_randomd(double from, double to);
+float math_randomf(float from, float to);
 
 static real_t math_randomr(int from, int to) {
 	return (real_t)math_randomf((real_t)from, (real_t)to);

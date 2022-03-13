@@ -86,7 +86,7 @@ env["CXXFLAGS"] = ""
 env.Append(CXXFLAGS=str(CXXFLAGS).split())
 
 LINKFLAGS = env.get("LINKFLAGS", "")
-env["LINKFLAGS"] = ""
+env["LINKFLAGS"] = "-lm"
 env.Append(LINKFLAGS=str(LINKFLAGS).split())
 
 methods.no_verbose(sys, env)
