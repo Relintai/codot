@@ -96,8 +96,8 @@ void vector2_normalize(Vector2 *v);
 Vector2 vector2_normalized(Vector2 v);
 bool vector2_is_normalized(const Vector2 *v);
 
-real_t dot(const Vector2 *self, const Vector2 *p_other);
-real_t cross(const Vector2 *self, const Vector2 *p_other);
+real_t vector2_dot(const Vector2 *self, const Vector2 *p_other);
+real_t vector2_cross(const Vector2 *self, const Vector2 *p_other);
 
 real_t vector2_distance_to(const Vector2 *self, const Vector2 *p_vector2);
 real_t vector2_distance_squared_to(const Vector2 *self, const Vector2 *p_vector2);

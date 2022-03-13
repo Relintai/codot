@@ -76,7 +76,7 @@ real_t vector2_distance_squared_to(const Vector2 *self, const Vector2 *p_vector2
 }
 
 real_t vector2_angle_to(const Vector2 *self, const Vector2 *p_vector2) {
-	return math_atan2f(cross(self, p_vector2), dot(self, p_vector2));
+	return math_atan2f(vector2_cross(self, p_vector2), vector2_dot(self, p_vector2));
 }
 
 real_t vector2_angle_to_point(const Vector2 *self, const Vector2 *p_vector2) {
