@@ -83,13 +83,21 @@ real_t vector2_angle_to_point(const Vector2 *self, const Vector2 *p_vector2) {
 	return math_atan2f(self->y - p_vector2->y, self->x - p_vector2->x);
 }
 
+real_t vector2_angle(const Vector2 *self) {
+	return math_atan2f(self->y, self->x);
+}
 
+Vector2 vector2_rotated(const Vector2 *self, real_t p_by) {
+	Vector2 v;
+
+	vector2_set_rotation(&v, vector2_angle(self) + p_by);
+	vector2_mul_eqs(&v, vector2_length(&v));
+
+	return v;
+}
 
 /*
 
-real_t vector2_angle() {
-	return Math::atan2(y, x);
-}
 
 Vector2 vector2_sign() {
 	return Vector2(SGN(x), SGN(y));
@@ -107,12 +115,6 @@ Vector2 vector2_round() {
 	return Vector2(Math::round(x), Math::round(y));
 }
 
-Vector2 vector2_rotated(real_t p_by) {
-	Vector2 v;
-	v.set_rotation(angle() + p_by);
-	v *= length();
-	return v;
-}
 
 Vector2 vector2_posmod(const real_t p_mod) {
 	return Vector2(Math::fposmod(x, p_mod), Math::fposmod(y, p_mod));
