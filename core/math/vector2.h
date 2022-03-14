@@ -304,17 +304,9 @@ bool vector2_is_equal_approx(const Vector2 *self, const Vector2 *p_v);
 typedef Vector2 Size2;
 typedef Vector2 Point2;
 
-/*
-
-
 // INTEGER STUFF
 
-struct _NO_DISCARD_CLASS_ Vector2i {
-	enum Axis {
-		AXIS_X,
-		AXIS_Y,
-	};
-
+typedef struct _NO_DISCARD_CLASS_ Vector2i {
 	union {
 		struct {
 			union {
@@ -329,60 +321,162 @@ struct _NO_DISCARD_CLASS_ Vector2i {
 
 		int coord[2];
 	};
+} Vector2i;
 
-	_FORCE_INLINE_ int &operator[](int p_idx) {
-		DEV_ASSERT((unsigned int)p_idx < 2);
-		return coord[p_idx];
-	}
-	_FORCE_INLINE_ const int &operator[](int p_idx) const {
-		DEV_ASSERT((unsigned int)p_idx < 2);
-		return coord[p_idx];
-	}
+static _FORCE_INLINE_ int vector2i_get_axis(const Vector2i *v, int p_idx) {
+	//DEV_ASSERT((unsigned int)p_idx < 2);
+	return v->coord[p_idx];
+}
 
-	Vector2i operator+(const Vector2i &p_v);
-	void operator+=(const Vector2i &p_v);
-	Vector2i operator-(const Vector2i &p_v);
-	void operator-=(const Vector2i &p_v);
-	Vector2i operator*(const Vector2i &p_v1);
+/*
+//not needed
+static _FORCE_INLINE_ const int &operator[](int p_idx) const {
+	DEV_ASSERT((unsigned int)p_idx < 2);
+	return coord[p_idx];
+}
+*/
 
-	Vector2i operator*(const int &rvalue);
-	void operator*=(const int &rvalue);
+static _FORCE_INLINE_ void vector2i_set_all(Vector2i *self, real_t p_value) {
+	self->x = self->y = p_value;
+}
 
-	Vector2i operator/(const Vector2i &p_v1);
+static _FORCE_INLINE_ void vector2i_set(Vector2i *self, real_t p_value_x, real_t p_value_y) {
+	self->x = p_value_x;
+	self->y = p_value_y;
+}
 
-	Vector2i operator/(const int &rvalue);
+static _FORCE_INLINE_ Vector2i vector2i_create(real_t p_value_x, real_t p_value_y) {
+	Vector2i v;
 
-	void operator/=(const int &rvalue);
+	v.x = p_value_x;
+	v.y = p_value_y;
 
-	Vector2i operator-();
-	bool operator<(const Vector2i &p_vec2) const { return (x == p_vec2.x) ? (y < p_vec2.y) : (x < p_vec2.x); }
-	bool operator>(const Vector2i &p_vec2) const { return (x == p_vec2.x) ? (y > p_vec2.y) : (x > p_vec2.x); }
+	return v;
+}
 
-	bool operator==(const Vector2i &p_vec2);
-	bool operator!=(const Vector2i &p_vec2);
+static _FORCE_INLINE_ Vector2i vector2i_createv(const Vector2i *other) {
+	Vector2i v;
 
-	real_t get_aspect() const { return width / (real_t)height; }
+	v.x = other->x;
+	v.y = other->y;
 
-	operator String() const { return String::num(x) + ", " + String::num(y); }
+	return v;
+}
 
-	operator Vector2() const { return Vector2(x, y); }
-	inline Vector2i(const Vector2 &p_vec2) {
-		x = (int)p_vec2.x;
-		y = (int)p_vec2.y;
-	}
-	inline Vector2i(int p_x, int p_y) {
-		x = p_x;
-		y = p_y;
-	}
-	inline Vector2i() {
-		x = 0;
-		y = 0;
-	}
+// Vector2i - Vector2i operators
+static _FORCE_INLINE_ Vector2i vector2i_addv(const Vector2i *self, const Vector2i *p_v) {
+	return vector2i_create(self->x + p_v->x, self->y + p_v->y);
+}
+static _FORCE_INLINE_ void vector2i_add_eqv(Vector2i *self, const Vector2i *p_v) {
+	self->x += p_v->x;
+	self->y += p_v->y;
+}
+static _FORCE_INLINE_ Vector2i vector2i_subv(const Vector2i *self, const Vector2i *p_v) {
+	return vector2i_create(self->x - p_v->x, self->y - p_v->y);
+}
+static _FORCE_INLINE_ Vector2i vector2i_subvc(Vector2i self, Vector2i p_v) {
+	return vector2i_create(self.x - p_v.x, self.y - p_v.y);
+}
+static _FORCE_INLINE_ void vector2i_sub_eqv(Vector2i *self, const Vector2i *p_v) {
+	self->x -= p_v->x;
+	self->y -= p_v->y;
+}
+static _FORCE_INLINE_ Vector2i vector2i_mulv(const Vector2i *self, const Vector2i *p_v1) {
+	return vector2i_create(self->x * p_v1->x, self->y * p_v1->y);
+}
+static _FORCE_INLINE_ Vector2i vector2i_mulvc(Vector2i self, Vector2i p_v1) {
+	return vector2i_create(self.x * p_v1.x, self.y * p_v1.y);
+}
+static _FORCE_INLINE_ void vector2i_mul_eqv(Vector2i *self, const Vector2i *rvalue) {
+	self->x *= rvalue->x;
+	self->y *= rvalue->y;
+}
+static _FORCE_INLINE_ Vector2i vector2i_divv(const Vector2i *self, const Vector2i *p_v1) {
+	return vector2i_create(self->x / p_v1->x, self->y / p_v1->y);
+}
+static _FORCE_INLINE_ void vector2i_div_eqv(Vector2i *self, const Vector2i *rvalue) {
+	self->x /= rvalue->x;
+	self->y /= rvalue->y;
+}
+
+// Vector2i - scalar operators
+static _FORCE_INLINE_ Vector2i vector2i_muls(const Vector2i *self, const int rvalue) {
+	return vector2i_create(self->x * rvalue, self->y * rvalue);
 };
+static _FORCE_INLINE_ Vector2i vector2i_mulsc(Vector2i self, const int rvalue) {
+	return vector2i_create(self.x * rvalue, self.y * rvalue);
+};
+static _FORCE_INLINE_ void vector2i_mul_eqs(Vector2i *self, const int rvalue) {
+	self->x *= rvalue;
+	self->y *= rvalue;
+};
+
+static _FORCE_INLINE_ Vector2i vector2i_divs(const Vector2i *self, const int rvalue) {
+	return vector2i_create(self->x / rvalue, self->y / rvalue);
+};
+static _FORCE_INLINE_ Vector2i vector2i_divsc(Vector2i self, const int rvalue) {
+	return vector2i_create(self.x / rvalue, self.y / rvalue);
+};
+
+static _FORCE_INLINE_ void vector2i_div_eqs(Vector2i *self, const int rvalue) {
+	self->x /= rvalue;
+	self->y /= rvalue;
+};
+
+/*
+static _FORCE_INLINE_ Vector2i operator*(real_t p_scalar, const Vector2i *p_vec) {
+	return p_vec * p_scalar;
+}
+*/
+
+// Other
+static _FORCE_INLINE_ Vector2i vector2i_neg(const Vector2i *self) {
+	return vector2i_create(-(self->x), -(self->y));
+}
+static _FORCE_INLINE_ Vector2i vector2i_negc(Vector2i self) {
+	return vector2i_create(-(self.x), -(self.y));
+}
+
+//operator==
+static _FORCE_INLINE_ bool vector2i_eq(const Vector2i *self, const Vector2i *p_vec2) {
+	return self->x == p_vec2->x && self->y == p_vec2->y;
+}
+//operator!=
+static _FORCE_INLINE_ bool vector2i_neq(const Vector2i *self, const Vector2i *p_vec2) {
+	return self->x != p_vec2->x || self->y != p_vec2->y;
+}
+//operator<
+static _FORCE_INLINE_ bool vector2i_lt(const Vector2i *self, const Vector2i *p_vec2) {
+	return self->x == p_vec2->x ? (self->y < p_vec2->y) : (self->x < p_vec2->x);
+}
+//operator>
+static _FORCE_INLINE_ bool vector2i_gt(const Vector2i *self, const Vector2i *p_vec2) {
+	return self->x == p_vec2->x ? (self->y > p_vec2->y) : (self->x > p_vec2->x);
+}
+//operator<=
+static _FORCE_INLINE_ bool vector2i_lte(const Vector2i *self, const Vector2i *p_vec2) {
+	return self->x == p_vec2->x ? (self->y <= p_vec2->y) : (self->x < p_vec2->x);
+}
+//operator>=
+static _FORCE_INLINE_ bool vector2i_gte(const Vector2i *self, const Vector2i *p_vec2) {
+	return self->x == p_vec2->x ? (self->y >= p_vec2->y) : (self->x > p_vec2->x);
+}
+
+static _FORCE_INLINE_ real_t vector2i_get_aspect(const Vector2i *self) {
+	return (self->width / (real_t)self->height);
+}
+
+/*
+String vector2i_to_string(const Vector2i *self) const {
+	return String::num(x) + ", " + String::num(y);
+}
+*/
+
+static _FORCE_INLINE_ Vector2 vector2i_to_vector2(const Vector2i *self) {
+	return vector2_create(self->x, self->y);
+}
 
 typedef Vector2i Size2i;
 typedef Vector2i Point2i;
-
-*/
 
 #endif // VECTOR2_H
