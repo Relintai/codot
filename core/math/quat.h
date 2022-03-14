@@ -47,7 +47,25 @@ extern _FORCE_INLINE_ void quat_set(Quat *self, real_t p_x, real_t p_y, real_t p
 	self->w = p_z;
 }
 
-extern _FORCE_INLINE_ Quat quat_create(real_t p_x, real_t p_y, real_t p_z, real_t p_w) {
+extern _FORCE_INLINE_ void quat_setq(Quat *self, const Quat *p_q) {
+	self->x = p_q->x;
+	self->y = p_q->y;
+	self->z = p_q->z;
+	self->w = p_q->w;
+}
+
+extern _FORCE_INLINE_ Quat quat_create() {
+	Quat q;
+
+	q.x = 0;
+	q.y = 0;
+	q.z = 0;
+	q.w = 1;
+
+	return q;
+}
+
+extern _FORCE_INLINE_ Quat quat_creater(real_t p_x, real_t p_y, real_t p_z, real_t p_w) {
 	Quat q;
 
 	q.x = p_x;
@@ -58,7 +76,7 @@ extern _FORCE_INLINE_ Quat quat_create(real_t p_x, real_t p_y, real_t p_z, real_
 	return q;
 }
 
-extern _FORCE_INLINE_ Quat quat_createv(const Quat *other) {
+extern _FORCE_INLINE_ Quat quat_createq(const Quat *other) {
 	Quat q;
 
 	q.x = other->x;
@@ -68,6 +86,33 @@ extern _FORCE_INLINE_ Quat quat_createv(const Quat *other) {
 
 	return q;
 }
+
+extern _FORCE_INLINE_ Quat quat_createv(const Vector3 *v0, const Vector3 *v1) {
+	Quat q;
+
+	Vector3 c = vector3_cross(v0, v1);
+	real_t d = vector3_dot(v0, v1);
+
+	if (d < -1 + (real_t)CMP_EPSILON) {
+		q.x = 0;
+		q.y = 1;
+		q.z = 0;
+		q.w = 0;
+	} else {
+		real_t s = math_sqrtf((1 + d) * 2);
+		real_t rs = 1 / s;
+
+		q.x = c.x * rs;
+		q.y = c.y * rs;
+		q.z = c.z * rs;
+		q.w = s * 0.5f;
+	}
+
+	return q;
+}
+
+Quat quat_create_ae(const Vector3 *axis, const real_t angle);
+Quat quat_create_euler(const Vector3 *euler);
 
 real_t quat_dot(const Quat *self, const Quat *p_q) {
 	return self->x * p_q->x + self->y * p_q->y + self->z * p_q->z + self->w * p_q->w;
@@ -84,7 +129,7 @@ real_t quat_length_squaredc(const Quat self) {
 }
 
 extern _FORCE_INLINE_ Quat quat_add(const Quat *self, const Quat *p_q) {
-	return quat_create(self->x + p_q->x, self->y + p_q->y, self->z + p_q->z, self->w + p_q->w);
+	return quat_creater(self->x + p_q->x, self->y + p_q->y, self->z + p_q->z, self->w + p_q->w);
 }
 extern _FORCE_INLINE_ void quat_add_eq(Quat *self, const Quat *p_q) {
 	self->x += p_q->x;
@@ -94,10 +139,10 @@ extern _FORCE_INLINE_ void quat_add_eq(Quat *self, const Quat *p_q) {
 }
 
 extern _FORCE_INLINE_ Quat quat_subv(const Quat *self, const Quat *p_v) {
-	return quat_create(self->x - p_v->x, self->y - p_v->y, self->z - p_v->z, self->w - p_v->w);
+	return quat_creater(self->x - p_v->x, self->y - p_v->y, self->z - p_v->z, self->w - p_v->w);
 }
 extern _FORCE_INLINE_ Quat quat_subvc(const Quat self, const Quat p_v) {
-	return quat_create(self.x - p_v.x, self.y - p_v.y, self.z - p_v.z, self.w - p_v.w);
+	return quat_creater(self.x - p_v.x, self.y - p_v.y, self.z - p_v.z, self.w - p_v.w);
 }
 extern _FORCE_INLINE_ void quat_sub_eqv(Quat *self, const Quat *p_q) {
 	self->x -= p_q->x;
@@ -108,43 +153,44 @@ extern _FORCE_INLINE_ void quat_sub_eqv(Quat *self, const Quat *p_q) {
 
 // Other
 extern _FORCE_INLINE_ Quat quat_neg(const Quat *self) {
-	return quat_create(-(self->x), -(self->y), -(self->z), -(self->w));
+	return quat_creater(-(self->x), -(self->y), -(self->z), -(self->w));
 }
 extern _FORCE_INLINE_ Quat quat_negc(const Quat self) {
-	return quat_create(-(self.x), -(self.y), -(self.z), -(self.w));
+	return quat_creater(-(self.x), -(self.y), -(self.z), -(self.w));
 }
 
 extern _FORCE_INLINE_ Quat quat_mulq(const Quat *self, const Quat *p_v1) {
-	return quat_create(self->x * p_v1->x, self->y * p_v1->y, self->z * p_v1->z, self->w * p_v1->w);
+	return quat_creater(self->x * p_v1->x, self->y * p_v1->y, self->z * p_v1->z, self->w * p_v1->w);
 }
 extern _FORCE_INLINE_ Quat quat_mulqc(const Quat self, const Quat p_q) {
-	return quat_create(self.x * p_q.x, self.y * p_q.y, self.z * p_q.z, self.w * p_q.w);
+	return quat_creater(self.x * p_q.x, self.y * p_q.y, self.z * p_q.z, self.w * p_q.w);
 }
-extern _FORCE_INLINE_ void quat_mul_eqq(Quat *self, const Quat *rvalue) {
-	self->x *= rvalue->x;
-	self->y *= rvalue->y;
-	self->z *= rvalue->z;
-	self->w *= rvalue->w;
+extern _FORCE_INLINE_ void quat_mul_eqq(Quat *self, const Quat *p_q) {
+	quat_set(self,
+			self->w * p_q->x + self->x * p_q->w + self->y * p_q->z - self->z * p_q->y,
+			self->w * p_q->y + self->y * p_q->w + self->z * p_q->x - self->x * p_q->z,
+			self->w * p_q->z + self->z * p_q->w + self->x * p_q->y - self->y * p_q->x,
+			self->w * p_q->w - self->x * p_q->x - self->y * p_q->y - self->z * p_q->z);
 }
 
 extern _FORCE_INLINE_ Quat quat_mulv(const Quat *self, const Vector3 *v) {
-	return quat_create(self->w * v->x + self->y * v->z - self->z * v->y,
+	return quat_creater(self->w * v->x + self->y * v->z - self->z * v->y,
 			self->w * v->y + self->z * v->x - self->x * v->z,
 			self->w * v->z + self->x * v->y - self->y * v->x,
 			-self->x * v->x - self->y * v->y - self->z * v->z);
 }
 extern _FORCE_INLINE_ Quat quat_mulvc(const Quat self, Vector3 v) {
-	return quat_create(self.w * v.x + self.y * v.z - self.z * v.y,
+	return quat_creater(self.w * v.x + self.y * v.z - self.z * v.y,
 			self.w * v.y + self.z * v.x - self.x * v.z,
 			self.w * v.z + self.x * v.y - self.y * v.x,
 			-self.x * v.x - self.y * v.y - self.z * v.z);
 }
 
 extern _FORCE_INLINE_ Quat quat_muls(const Quat *self, const real_t rvalue) {
-	return quat_create(self->x * rvalue, self->y * rvalue, self->z * rvalue, self->w * rvalue);
+	return quat_creater(self->x * rvalue, self->y * rvalue, self->z * rvalue, self->w * rvalue);
 };
 extern _FORCE_INLINE_ Quat quat_mulsc(Quat self, const real_t rvalue) {
-	return quat_create(self.x * rvalue, self.y * rvalue, self.z * rvalue, self.w * rvalue);
+	return quat_creater(self.x * rvalue, self.y * rvalue, self.z * rvalue, self.w * rvalue);
 };
 extern _FORCE_INLINE_ void quat_mul_eqs(Quat *self, const real_t rvalue) {
 	self->x *= rvalue;
@@ -155,11 +201,11 @@ extern _FORCE_INLINE_ void quat_mul_eqs(Quat *self, const real_t rvalue) {
 
 extern _FORCE_INLINE_ Quat quat_divs(const Quat *self, const real_t rvalue) {
 	real_t r = 1 / rvalue;
-	return quat_create(self->x * r, self->y * r, self->z * r, self->w * r);
+	return quat_creater(self->x * r, self->y * r, self->z * r, self->w * r);
 };
 extern _FORCE_INLINE_ Quat quat_divsc(Quat self, const real_t rvalue) {
 	real_t r = 1 / rvalue;
-	return quat_create(self.x * r, self.y * r, self.z * r, self.w * r);
+	return quat_creater(self.x * r, self.y * r, self.z * r, self.w * r);
 };
 extern _FORCE_INLINE_ void quat_div_eqs(Quat *self, const real_t rvalue) {
 	real_t r = 1 / rvalue;
@@ -170,124 +216,63 @@ extern _FORCE_INLINE_ void quat_div_eqs(Quat *self, const real_t rvalue) {
 	self->w *= r;
 };
 
-	/*
+//operator==
+extern _FORCE_INLINE_ bool quat_eq(const Quat *self, const Quat *p_q) {
+	return self->x == p_q->x && self->y == p_q->y && self->z == p_q->z && self->w == p_q->w;
+}
+//operator!=
+extern _FORCE_INLINE_ bool quat_neq(const Quat *self, const Quat *p_q) {
+	return self->x != p_q->x || self->y != p_q->y || self->z != p_q->z || self->w != p_q->w;
+}
 
+void quat_set_axis_angle(Quat *self, const Vector3 *axis, const real_t angle);
+extern _FORCE_INLINE_ void quat_get_axis_angle(const Quat *self, Vector3 *r_axis, real_t *r_angle) {
+	*r_angle = 2 * math_acosf(self->w);
+	real_t r = ((real_t)1) / math_sqrtf(1 - self->w * self->w);
+	r_axis->x = self->x * r;
+	r_axis->y = self->y * r;
+	r_axis->z = self->z * r;
+}
 
-		bool is_equal_approx(const Quat &p_quat) const;
-		real_t length() const;
-		void normalize();
-		Quat normalized() const;
-		bool is_normalized() const;
-		Quat inverse() const;
+extern _FORCE_INLINE_ Vector3 quat_xform(const Quat *self, const Vector3 *v) {
+#ifdef MATH_CHECKS
+	//ERR_FAIL_COND_V_MSG(!is_normalized(), v, "The quaternion must be normalized.");
+#endif
+	Vector3 u = vector3_create(self->x, self->y, self->z);
+	Vector3 uv = vector3_cross(&u, v);
+	Vector3 uvc = vector3_cross(&u, &uv);
+	Vector3 uvw = vector3_muls(&uv, self->w);
+	Vector3 f = vector3_mulsc(vector3_addv(&uvw, &uvc), ((real_t)2));
+	return vector3_addv(v, &f);
+}
 
-		real_t angle_to(const Quat &p_to) const;
+real_t quat_angle_to(const Quat *self, const Quat *p_to);
 
-		void set_euler_xyz(const Vector3 &p_euler);
-		Vector3 get_euler_xyz() const;
-		void set_euler_yxz(const Vector3 &p_euler);
-		Vector3 get_euler_yxz() const;
+bool quat_is_equal_approx(const Quat *self, const Quat *p_quat);
+real_t quat_length(const Quat *self);
+void quat_normalize(Quat *self);
+Quat quat_normalized(const Quat *self);
+bool quat_is_normalized(const Quat *self);
+Quat quat_inverse(const Quat *self);
 
-		void set_euler(const Vector3 &p_euler) { set_euler_yxz(p_euler); };
-		Vector3 get_euler() const { return get_euler_yxz(); };
+void quat_set_euler_xyz(Quat *self, const Vector3 *p_euler);
+Vector3 quat_get_euler_xyz(const Quat *self);
+void quat_set_euler_yxz(Quat *self, const Vector3 *p_euler);
+Vector3 quat_get_euler_yxz(const Quat *self);
 
-		Quat slerp(const Quat &p_to, const real_t &p_weight) const;
-		Quat slerpni(const Quat &p_to, const real_t &p_weight) const;
-		Quat cubic_slerp(const Quat &p_b, const Quat &p_pre_a, const Quat &p_post_b, const real_t &p_weight) const;
+void quat_set_euler(Quat *self, const Vector3 *p_euler) {
+	quat_set_euler_yxz(self, p_euler);
+};
+Vector3 quat_get_euler(const Quat *self) {
+	return quat_get_euler_yxz(self);
+};
 
-		void set_axis_angle(const Vector3 &axis, const real_t &angle);
-		_FORCE_INLINE_ void get_axis_angle(Vector3 &r_axis, real_t &r_angle) const {
-			r_angle = 2 * Math::acos(w);
-			real_t r = ((real_t)1) / Math::sqrt(1 - w * w);
-			r_axis.x = x * r;
-			r_axis.y = y * r;
-			r_axis.z = z * r;
-		}
+Quat quat_slerp(const Quat *self, const Quat *p_to, const real_t p_weight);
+Quat quat_slerpni(const Quat *self, const Quat *p_to, const real_t p_weight);
+Quat quat_cubic_slerp(const Quat *self, const Quat *p_b, const Quat *p_pre_a, const Quat *p_post_b, const real_t p_weight);
 
-
-
-		_FORCE_INLINE_ Vector3 xform(const Vector3 &v) const {
-	#ifdef MATH_CHECKS
-			ERR_FAIL_COND_V_MSG(!is_normalized(), v, "The quaternion must be normalized.");
-	#endif
-			Vector3 u(x, y, z);
-			Vector3 uv = u.cross(v);
-			return v + ((uv * w) + u.cross(uv)) * ((real_t)2);
-		}
-
-		operator String() const;
-
-		inline void set(real_t p_x, real_t p_y, real_t p_z, real_t p_w) {
-			x = p_x;
-			y = p_y;
-			z = p_z;
-			w = p_w;
-		}
-		inline Quat(real_t p_x, real_t p_y, real_t p_z, real_t p_w) :
-				x(p_x),
-				y(p_y),
-				z(p_z),
-				w(p_w) {
-		}
-		Quat(const Vector3 &axis, const real_t &angle) { set_axis_angle(axis, angle); }
-
-		Quat(const Vector3 &euler) { set_euler(euler); }
-		Quat(const Quat &p_q) :
-				x(p_q.x),
-				y(p_q.y),
-				z(p_q.z),
-				w(p_q.w) {
-		}
-
-		Quat &operator=(const Quat &p_q) {
-			x = p_q.x;
-			y = p_q.y;
-			z = p_q.z;
-			w = p_q.w;
-			return *this;
-		}
-
-		Quat(const Vector3 &v0, const Vector3 &v1) // shortest arc
-		{
-			Vector3 c = v0.cross(v1);
-			real_t d = v0.dot(v1);
-
-			if (d < -1 + (real_t)CMP_EPSILON) {
-				x = 0;
-				y = 1;
-				z = 0;
-				w = 0;
-			} else {
-				real_t s = Math::sqrt((1 + d) * 2);
-				real_t rs = 1 / s;
-
-				x = c.x * rs;
-				y = c.y * rs;
-				z = c.z * rs;
-				w = s * 0.5f;
-			}
-		}
-
-		inline Quat() :
-				x(0),
-				y(0),
-				z(0),
-				w(1) {
-		}
-	//-----
-
-
-
-
-		_FORCE_INLINE_ bool operator==(const Quat &p_quat) const;
-		_FORCE_INLINE_ bool operator!=(const Quat &p_quat) const;
-
-	bool Quat::operator==(const Quat &p_quat) const {
-		return x == p_quat.x && y == p_quat.y && z == p_quat.z && w == p_quat.w;
-	}
-
-	bool Quat::operator!=(const Quat &p_quat) const {
-		return x != p_quat.x || y != p_quat.y || z != p_quat.z || w != p_quat.w;
-	}
-	*/
+/*
+	operator String() const;
+*/
 
 #endif
