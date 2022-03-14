@@ -30,8 +30,9 @@
 
 #include "vector3.h"
 
-#include "core/math/basis.h"
+//#include "core/math/basis.h"
 
+/*
 void Vector3::rotate(const Vector3 &p_axis, real_t p_phi) {
 	*this = Basis(p_axis, p_phi).xform(*this);
 }
@@ -154,3 +155,4 @@ bool Vector3::is_equal_approx(const Vector3 &p_v) const {
 Vector3::operator String() const {
 	return (rtos(x) + ", " + rtos(y) + ", " + rtos(z));
 }
+*/

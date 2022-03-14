@@ -38,7 +38,7 @@ struct Vector2i;
 static const int VECTOR2_AXIS_COUNT = 2;
 
 enum Vector2Axis {
-	VECTOR2_AXIS_X,
+	VECTOR2_AXIS_X = 0,
 	VECTOR2_AXIS_Y,
 };
 

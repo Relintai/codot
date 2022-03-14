@@ -32,19 +32,19 @@
 #define VECTOR3_H
 
 #include "core/math/math_funcs.h"
-#include "core/ustring.h"
+//#include "core/ustring.h"
 
-class Basis;
+struct Basis;
 
-struct _NO_DISCARD_CLASS_ Vector3 {
-	static const int AXIS_COUNT = 3;
+static const int VECTOR3_AXIS_COUNT = 3;
 
-	enum Axis {
-		AXIS_X,
-		AXIS_Y,
-		AXIS_Z,
-	};
+enum Vector3Axis {
+	VECTOR3_AXIS_X = 0,
+	VECTOR3_AXIS_Y,
+	VECTOR3_AXIS_Z,
+};
 
+typedef struct _NO_DISCARD_CLASS_ Vector3 {
 	union {
 		struct {
 			real_t x;
@@ -54,121 +54,163 @@ struct _NO_DISCARD_CLASS_ Vector3 {
 
 		real_t coord[3];
 	};
+} Vector3;
 
-	_FORCE_INLINE_ const real_t &operator[](int p_axis) const {
-		DEV_ASSERT((unsigned int)p_axis < 3);
-		return coord[p_axis];
-	}
+extern _FORCE_INLINE_ void vector3_set_axis(Vector3 *v, int p_axis, real_t p_value) {
+	v->coord[p_axis] = p_value;
+}
 
-	_FORCE_INLINE_ real_t &operator[](int p_axis) {
-		DEV_ASSERT((unsigned int)p_axis < 3);
-		return coord[p_axis];
-	}
+extern _FORCE_INLINE_ const real_t vector3_get_axis(const Vector3 *v, int p_axis) {
+	//DEV_ASSERT((unsigned int)p_axis < 3);
+	return v->coord[p_axis];
+}
 
-	void set_axis(int p_axis, real_t p_value);
-	real_t get_axis(int p_axis) const;
+/*
+_FORCE_INLINE_ real_t &operator[](int p_axis) {
+	DEV_ASSERT((unsigned int)p_axis < 3);
+	return coord[p_axis];
+}
+*/
 
-	_FORCE_INLINE_ void set_all(real_t p_value) {
-		x = y = z = p_value;
-	}
+extern _FORCE_INLINE_ int vector3_min_axis(const Vector3 *v) {
+	return v->x < v->y ? (v->x < v->z ? 0 : 2) : (v->y < v->z ? 1 : 2);
+}
 
-	_FORCE_INLINE_ int min_axis() const {
-		return x < y ? (x < z ? 0 : 2) : (y < z ? 1 : 2);
-	}
+extern _FORCE_INLINE_ int vector3_max_axis(const Vector3 *v) {
+	return v->x < v->y ? (v->y < v->z ? 2 : 1) : (v->x < v->z ? 2 : 0);
+}
 
-	_FORCE_INLINE_ int max_axis() const {
-		return x < y ? (y < z ? 2 : 1) : (x < z ? 2 : 0);
-	}
+extern _FORCE_INLINE_ void vector3_set_all(Vector3 *self, real_t p_value) {
+	self->x = self->y = self->z = p_value;
+}
 
-	_FORCE_INLINE_ real_t length() const;
-	_FORCE_INLINE_ real_t length_squared() const;
+extern _FORCE_INLINE_ void vector3_set(Vector3 *self, real_t p_value_x, real_t p_value_y, real_t p_value_z) {
+	self->x = p_value_x;
+	self->y = p_value_y;
+	self->z = p_value_z;
+}
 
-	_FORCE_INLINE_ void normalize();
-	_FORCE_INLINE_ Vector3 normalized() const;
-	_FORCE_INLINE_ bool is_normalized() const;
-	_FORCE_INLINE_ Vector3 inverse() const;
-	Vector3 limit_length(const real_t p_len = 1.0) const;
+extern _FORCE_INLINE_ Vector3 vector3_create(real_t p_value_x, real_t p_value_y, real_t p_value_z) {
+	Vector3 v;
 
-	_FORCE_INLINE_ void zero();
+	v.x = p_value_x;
+	v.y = p_value_y;
+	v.z = p_value_z;
 
-	void snap(Vector3 p_val);
-	Vector3 snapped(Vector3 p_val) const;
+	return v;
+}
 
-	void rotate(const Vector3 &p_axis, real_t p_phi);
-	Vector3 rotated(const Vector3 &p_axis, real_t p_phi) const;
+extern _FORCE_INLINE_ Vector3 vector3_createv(const Vector3 *other) {
+	Vector3 v;
 
-	/* Static Methods between 2 vector3s */
+	v.x = other->x;
+	v.y = other->y;
+	v.z = other->z;
 
-	_FORCE_INLINE_ Vector3 linear_interpolate(const Vector3 &p_to, real_t p_weight) const;
-	_FORCE_INLINE_ Vector3 slerp(const Vector3 &p_to, real_t p_weight) const;
-	Vector3 cubic_interpolate(const Vector3 &p_b, const Vector3 &p_pre_a, const Vector3 &p_post_b, real_t p_weight) const;
-	Vector3 cubic_interpolaten(const Vector3 &p_b, const Vector3 &p_pre_a, const Vector3 &p_post_b, real_t p_weight) const;
-	Vector3 move_toward(const Vector3 &p_to, const real_t p_delta) const;
+	return v;
+}
 
-	_FORCE_INLINE_ Vector3 cross(const Vector3 &p_b) const;
-	_FORCE_INLINE_ real_t dot(const Vector3 &p_b) const;
-	Basis outer(const Vector3 &p_b) const;
-	Basis to_diagonal_matrix() const;
 
-	_FORCE_INLINE_ Vector3 abs() const;
-	_FORCE_INLINE_ Vector3 floor() const;
-	_FORCE_INLINE_ Vector3 sign() const;
-	_FORCE_INLINE_ Vector3 ceil() const;
-	_FORCE_INLINE_ Vector3 round() const;
 
-	_FORCE_INLINE_ real_t distance_to(const Vector3 &p_to) const;
-	_FORCE_INLINE_ real_t distance_squared_to(const Vector3 &p_to) const;
 
-	_FORCE_INLINE_ Vector3 posmod(const real_t p_mod) const;
-	_FORCE_INLINE_ Vector3 posmodv(const Vector3 &p_modv) const;
-	_FORCE_INLINE_ Vector3 project(const Vector3 &p_to) const;
 
-	_FORCE_INLINE_ real_t angle_to(const Vector3 &p_to) const;
-	_FORCE_INLINE_ real_t signed_angle_to(const Vector3 &p_to, const Vector3 &p_axis) const;
-	_FORCE_INLINE_ Vector3 direction_to(const Vector3 &p_to) const;
+/*
 
-	_FORCE_INLINE_ Vector3 slide(const Vector3 &p_normal) const;
-	_FORCE_INLINE_ Vector3 bounce(const Vector3 &p_normal) const;
-	_FORCE_INLINE_ Vector3 reflect(const Vector3 &p_normal) const;
+_FORCE_INLINE_ real_t length() const;
+_FORCE_INLINE_ real_t length_squared() const;
 
-	bool is_equal_approx(const Vector3 &p_v) const;
-	inline bool is_equal_approx(const Vector3 &p_v, real_t p_tolerance) const;
+_FORCE_INLINE_ void normalize();
+_FORCE_INLINE_ Vector3 normalized() const;
+_FORCE_INLINE_ bool is_normalized() const;
+_FORCE_INLINE_ Vector3 inverse() const;
+Vector3 limit_length(const real_t p_len = 1.0) const;
 
-	/* Operators */
+_FORCE_INLINE_ void zero();
 
-	_FORCE_INLINE_ Vector3 &operator+=(const Vector3 &p_v);
-	_FORCE_INLINE_ Vector3 operator+(const Vector3 &p_v) const;
-	_FORCE_INLINE_ Vector3 &operator-=(const Vector3 &p_v);
-	_FORCE_INLINE_ Vector3 operator-(const Vector3 &p_v) const;
-	_FORCE_INLINE_ Vector3 &operator*=(const Vector3 &p_v);
-	_FORCE_INLINE_ Vector3 operator*(const Vector3 &p_v) const;
-	_FORCE_INLINE_ Vector3 &operator/=(const Vector3 &p_v);
-	_FORCE_INLINE_ Vector3 operator/(const Vector3 &p_v) const;
+void snap(Vector3 p_val);
+Vector3 snapped(Vector3 p_val) const;
 
-	_FORCE_INLINE_ Vector3 &operator*=(real_t p_scalar);
-	_FORCE_INLINE_ Vector3 operator*(real_t p_scalar) const;
-	_FORCE_INLINE_ Vector3 &operator/=(real_t p_scalar);
-	_FORCE_INLINE_ Vector3 operator/(real_t p_scalar) const;
+void rotate(const Vector3 &p_axis, real_t p_phi);
+Vector3 rotated(const Vector3 &p_axis, real_t p_phi) const;
 
-	_FORCE_INLINE_ Vector3 operator-() const;
+// Static Methods between 2 vector3s 
 
-	_FORCE_INLINE_ bool operator==(const Vector3 &p_v) const;
-	_FORCE_INLINE_ bool operator!=(const Vector3 &p_v) const;
-	_FORCE_INLINE_ bool operator<(const Vector3 &p_v) const;
-	_FORCE_INLINE_ bool operator<=(const Vector3 &p_v) const;
-	_FORCE_INLINE_ bool operator>(const Vector3 &p_v) const;
-	_FORCE_INLINE_ bool operator>=(const Vector3 &p_v) const;
+_FORCE_INLINE_ Vector3 linear_interpolate(const Vector3 &p_to, real_t p_weight) const;
+_FORCE_INLINE_ Vector3 slerp(const Vector3 &p_to, real_t p_weight) const;
+Vector3 cubic_interpolate(const Vector3 &p_b, const Vector3 &p_pre_a, const Vector3 &p_post_b, real_t p_weight) const;
+Vector3 cubic_interpolaten(const Vector3 &p_b, const Vector3 &p_pre_a, const Vector3 &p_post_b, real_t p_weight) const;
+Vector3 move_toward(const Vector3 &p_to, const real_t p_delta) const;
 
-	operator String() const;
+_FORCE_INLINE_ Vector3 cross(const Vector3 &p_b) const;
+_FORCE_INLINE_ real_t dot(const Vector3 &p_b) const;
+Basis outer(const Vector3 &p_b) const;
+Basis to_diagonal_matrix() const;
 
-	_FORCE_INLINE_ Vector3(real_t p_x, real_t p_y, real_t p_z) {
-		x = p_x;
-		y = p_y;
-		z = p_z;
-	}
-	_FORCE_INLINE_ Vector3() { x = y = z = 0; }
-};
+_FORCE_INLINE_ Vector3 abs() const;
+_FORCE_INLINE_ Vector3 floor() const;
+_FORCE_INLINE_ Vector3 sign() const;
+_FORCE_INLINE_ Vector3 ceil() const;
+_FORCE_INLINE_ Vector3 round() const;
 
+_FORCE_INLINE_ real_t distance_to(const Vector3 &p_to) const;
+_FORCE_INLINE_ real_t distance_squared_to(const Vector3 &p_to) const;
+
+_FORCE_INLINE_ Vector3 posmod(const real_t p_mod) const;
+_FORCE_INLINE_ Vector3 posmodv(const Vector3 &p_modv) const;
+_FORCE_INLINE_ Vector3 project(const Vector3 &p_to) const;
+
+_FORCE_INLINE_ real_t angle_to(const Vector3 &p_to) const;
+_FORCE_INLINE_ real_t signed_angle_to(const Vector3 &p_to, const Vector3 &p_axis) const;
+_FORCE_INLINE_ Vector3 direction_to(const Vector3 &p_to) const;
+
+_FORCE_INLINE_ Vector3 slide(const Vector3 &p_normal) const;
+_FORCE_INLINE_ Vector3 bounce(const Vector3 &p_normal) const;
+_FORCE_INLINE_ Vector3 reflect(const Vector3 &p_normal) const;
+
+bool is_equal_approx(const Vector3 &p_v) const;
+inline bool is_equal_approx(const Vector3 &p_v, real_t p_tolerance) const;
+
+// Operators 
+
+_FORCE_INLINE_ Vector3 &operator+=(const Vector3 &p_v);
+_FORCE_INLINE_ Vector3 operator+(const Vector3 &p_v) const;
+_FORCE_INLINE_ Vector3 &operator-=(const Vector3 &p_v);
+_FORCE_INLINE_ Vector3 operator-(const Vector3 &p_v) const;
+_FORCE_INLINE_ Vector3 &operator*=(const Vector3 &p_v);
+_FORCE_INLINE_ Vector3 operator*(const Vector3 &p_v) const;
+_FORCE_INLINE_ Vector3 &operator/=(const Vector3 &p_v);
+_FORCE_INLINE_ Vector3 operator/(const Vector3 &p_v) const;
+
+_FORCE_INLINE_ Vector3 &operator*=(real_t p_scalar);
+_FORCE_INLINE_ Vector3 operator*(real_t p_scalar) const;
+_FORCE_INLINE_ Vector3 &operator/=(real_t p_scalar);
+_FORCE_INLINE_ Vector3 operator/(real_t p_scalar) const;
+
+_FORCE_INLINE_ Vector3 operator-() const;
+
+_FORCE_INLINE_ bool operator==(const Vector3 &p_v) const;
+_FORCE_INLINE_ bool operator!=(const Vector3 &p_v) const;
+_FORCE_INLINE_ bool operator<(const Vector3 &p_v) const;
+_FORCE_INLINE_ bool operator<=(const Vector3 &p_v) const;
+_FORCE_INLINE_ bool operator>(const Vector3 &p_v) const;
+_FORCE_INLINE_ bool operator>=(const Vector3 &p_v) const;
+
+operator String() const;
+
+_FORCE_INLINE_ Vector3(real_t p_x, real_t p_y, real_t p_z) {
+	x = p_x;
+	y = p_y;
+	z = p_z;
+}
+_FORCE_INLINE_ Vector3() {
+	x = y = z = 0;
+}
+
+*/
+
+//----
+
+/*
 Vector3 Vector3::cross(const Vector3 &p_b) const {
 	Vector3 ret(
 			(y * p_b.z) - (z * p_b.y),
@@ -251,7 +293,7 @@ Vector3 Vector3::direction_to(const Vector3 &p_to) const {
 	return ret;
 }
 
-/* Operators */
+// Operators 
 
 Vector3 &Vector3::operator+=(const Vector3 &p_v) {
 	x += p_v.x;
@@ -458,5 +500,7 @@ Vector3 Vector3::reflect(const Vector3 &p_normal) const {
 bool Vector3::is_equal_approx(const Vector3 &p_v, real_t p_tolerance) const {
 	return Math::is_equal_approx(x, p_v.x, p_tolerance) && Math::is_equal_approx(y, p_v.y, p_tolerance) && Math::is_equal_approx(z, p_v.z, p_tolerance);
 }
+
+*/
 
 #endif // VECTOR3_H
