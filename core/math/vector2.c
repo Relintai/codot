@@ -55,7 +55,7 @@ Vector2 vector2_normalized(Vector2 v) {
 
 bool vector2_is_normalized(const Vector2 *v) {
 	// use length_squared() instead of length() to avoid sqrt(), makes it more stringent.
-	return math_is_equal_approxft(length_squared(v), 1, (real_t)UNIT_EPSILON);
+	return math_is_equal_approxft(vector2_length_squared(v), 1, (real_t)UNIT_EPSILON);
 }
 
 real_t vector2_dot(const Vector2 *self, const Vector2 *p_other) {
@@ -139,83 +139,84 @@ Vector2 vector2_limit_length1(Vector2 *self) {
 	return v;
 }
 
-
-/*
-
-
-Vector2 vector2_sign() {
-	return Vector2(SGN(x), SGN(y));
+Vector2 vector2_sign(Vector2 *self) {
+	return vector2_create(SGN(self->x), SGN(self->y));
 }
 
-Vector2 vector2_floor() {
-	return Vector2(Math::floor(x), Math::floor(y));
+Vector2 vector2_floor(Vector2 *self) {
+	return vector2_create(math_floorf(self->x), math_floorf(self->y));
 }
 
-Vector2 vector2_ceil() {
-	return Vector2(Math::ceil(x), Math::ceil(y));
+Vector2 vector2_ceil(Vector2 *self) {
+	return vector2_create(math_ceilf(self->x), math_ceilf(self->y));
 }
 
-Vector2 vector2_round() {
-	return Vector2(Math::round(x), Math::round(y));
+Vector2 vector2_round(Vector2 *self) {
+	return vector2_create(math_roundf(self->x), math_roundf(self->y));
 }
 
-
-
-Vector2 vector2_snapped(const Vector2 &p_by) {
-	return Vector2(
-			Math::stepify(x, p_by.x),
-			Math::stepify(y, p_by.y));
+Vector2 vector2_snapped(Vector2 *self, const Vector2 *p_by) {
+	return vector2_create(
+			math_stepifyf(self->x, p_by->x),
+			math_stepifyf(self->y, p_by->y));
 }
 
-
-Vector2 vector2_cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight) const {
-	Vector2 p0 = p_pre_a;
-	Vector2 p1 = *this;
-	Vector2 p2 = p_b;
-	Vector2 p3 = p_post_b;
+Vector2 vector2_cubic_interpolate(const Vector2 *self, const Vector2 *p_b, const Vector2 *p_pre_a, const Vector2 *p_post_b, real_t p_weight) {
+	Vector2 p0 = *p_pre_a;
+	Vector2 p1 = *self;
+	Vector2 p2 = *p_b;
+	Vector2 p3 = *p_post_b;
+	Vector2 np0 = vector2_neg(&p0);
 
 	real_t t = p_weight;
 	real_t t2 = t * t;
 	real_t t3 = t2 * t;
 
+/*
 	Vector2 out;
 	out = 0.5f *
 			((p1 * 2) +
 					(-p0 + p2) * t +
 					(2 * p0 - 5 * p1 + 4 * p2 - p3) * t2 +
 					(-p0 + 3 * p1 - 3 * p2 + p3) * t3);
-	return out;
+*/
+	real_t x = 0.5f * ((p1.x * 2) + (np0.x + p2.x) * t + (2 * p0.x - 5 * p1.x + 4 * p2.x - p3.x) * t2 + (np0.x + 3 * p1.x - 3 * p2.x + p3.x) * t3);
+	real_t y = 0.5f * ((p1.y * 2) + (np0.y + p2.y) * t + (2 * p0.y - 5 * p1.y + 4 * p2.y - p3.y) * t2 + (np0.y + 3 * p1.y - 3 * p2.y + p3.y) * t3);
+
+	return vector2_create(x, y);
 }
 
-Vector2 vector2_move_toward(const Vector2 &p_to, const real_t p_delta) {
-	Vector2 v = *this;
-	Vector2 vd = p_to - v;
-	real_t len = vd.length();
-	return len <= p_delta || len < (real_t)CMP_EPSILON ? p_to : v + vd / len * p_delta;
+Vector2 vector2_move_toward(const Vector2 *self, const Vector2 *p_to, const real_t p_delta) {
+	Vector2 v = *self;
+	Vector2 vd = vector2_subv(p_to, &v);
+	real_t len = vector2_length(&vd);
+	return len <= p_delta || len < (real_t)CMP_EPSILON ? *p_to : vector2_divsc(vector2_addv(&v, &vd), len * p_delta);
 }
 
 // slide returns the component of the vector along the given plane, specified by its normal vector.
-Vector2 vector2_slide(const Vector2 &p_normal) {
+Vector2 vector2_slide(const Vector2 *self, const Vector2 *p_normal) {
 #ifdef MATH_CHECKS
 	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector2(), "The normal Vector2 must be normalized.");
 #endif
-	return *this - p_normal * this->dot(p_normal);
+	return vector2_mulsc(vector2_subv(self, p_normal), vector2_dot(self, p_normal));
 }
 
-Vector2 vector2_bounce(const Vector2 &p_normal) {
-	return -reflect(p_normal);
+Vector2 vector2_bounce(const Vector2 *self, const Vector2 *p_normal) {
+	return vector2_negc(vector2_reflect(self, p_normal));
 }
 
-Vector2 vector2_reflect(const Vector2 &p_normal) {
+Vector2 vector2_reflect(const Vector2 *self, const Vector2 *p_normal) {
 #ifdef MATH_CHECKS
-	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector2(), "The normal Vector2 must be normalized.");
+	//ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector2(), "The normal Vector2 must be normalized.");
 #endif
-	return 2 * p_normal * this->dot(p_normal) - *this;
+	return vector2_subvc(vector2_mulsc(vector2_muls(p_normal, vector2_dot(self, p_normal)), 2), *self);
 }
 
-bool vector2_is_equal_approx(const Vector2 &p_v) {
-	return Math::is_equal_approx(x, p_v.x) && Math::is_equal_approx(y, p_v.y);
+bool vector2_is_equal_approx(const Vector2 *self, const Vector2 *p_v) {
+	return math_is_equal_approxf(self->x, p_v->x) && math_is_equal_approxf(self->y, p_v->y);
 }
+
+/*
 
 // Vector2i
 

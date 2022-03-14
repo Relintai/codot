@@ -117,12 +117,18 @@ static _FORCE_INLINE_ void vector2_add_eqv(Vector2 *self, const Vector2 *p_v) {
 static _FORCE_INLINE_ Vector2 vector2_subv(const Vector2 *self, const Vector2 *p_v) {
 	return vector2_create(self->x - p_v->x, self->y - p_v->y);
 }
+static _FORCE_INLINE_ Vector2 vector2_subvc(Vector2 self, Vector2 p_v) {
+	return vector2_create(self.x - p_v.x, self.y - p_v.y);
+}
 static _FORCE_INLINE_ void vector2_sub_eqv(Vector2 *self, const Vector2 *p_v) {
 	self->x -= p_v->x;
 	self->y -= p_v->y;
 }
 static _FORCE_INLINE_ Vector2 vector2_mulv(const Vector2 *self, const Vector2 *p_v1) {
 	return vector2_create(self->x * p_v1->x, self->y * p_v1->y);
+}
+static _FORCE_INLINE_ Vector2 vector2_mulvc(Vector2 self, Vector2 p_v1) {
+	return vector2_create(self.x * p_v1.x, self.y * p_v1.y);
 }
 static _FORCE_INLINE_ void vector2_mul_eqv(Vector2 *self, const Vector2 *rvalue) {
 	self->x *= rvalue->x;
@@ -140,6 +146,9 @@ static _FORCE_INLINE_ void vector2_div_eqv(Vector2 *self, const Vector2 *rvalue)
 static _FORCE_INLINE_ Vector2 vector2_muls(const Vector2 *self, const real_t rvalue) {
 	return vector2_create(self->x * rvalue, self->y * rvalue);
 };
+static _FORCE_INLINE_ Vector2 vector2_mulsc(Vector2 self, const real_t rvalue) {
+	return vector2_create(self.x * rvalue, self.y * rvalue);
+};
 static _FORCE_INLINE_ void vector2_mul_eqs(Vector2 *self, const real_t rvalue) {
 	self->x *= rvalue;
 	self->y *= rvalue;
@@ -147,6 +156,9 @@ static _FORCE_INLINE_ void vector2_mul_eqs(Vector2 *self, const real_t rvalue) {
 
 static _FORCE_INLINE_ Vector2 vector2_divs(const Vector2 *self, const real_t rvalue) {
 	return vector2_create(self->x / rvalue, self->y / rvalue);
+};
+static _FORCE_INLINE_ Vector2 vector2_divsc(Vector2 self, const real_t rvalue) {
+	return vector2_create(self.x / rvalue, self.y / rvalue);
 };
 
 static _FORCE_INLINE_ void vector2_div_eqs(Vector2 *self, const real_t rvalue) {
@@ -164,7 +176,9 @@ static _FORCE_INLINE_ Vector2 operator*(real_t p_scalar, const Vector2 *p_vec) {
 static _FORCE_INLINE_ Vector2 vector2_neg(const Vector2 *self) {
 	return vector2_create(-(self->x), -(self->y));
 }
-
+static _FORCE_INLINE_ Vector2 vector2_negc(Vector2 self) {
+	return vector2_create(-(self.x), -(self.y));
+}
 
 real_t length(const Vector2 *v);
 real_t length_squared(const Vector2 *v);
@@ -211,7 +225,7 @@ Vector2 vector2_posmodv(Vector2 *self, const Vector2 *p_modv);
 Vector2 vector2_project(Vector2 *self, const Vector2 *p_to);
 
 static _FORCE_INLINE_ Vector2 vector2_plane_project(const Vector2 *self, real_t p_d, const Vector2 *p_vec) {
-	Vector2  v = vector2_muls(self, vector2_dot(self, p_vec) - p_d);
+	Vector2 v = vector2_muls(self, vector2_dot(self, p_vec) - p_d);
 	return vector2_subv(p_vec, &v);
 }
 
@@ -219,96 +233,79 @@ Vector2 vector2_clamped(Vector2 *self, real_t p_len);
 Vector2 vector2_limit_length(Vector2 *self, const real_t p_len);
 Vector2 vector2_limit_length1(Vector2 *self);
 
+real_t vector2_aspect(const Vector2 *self) {
+	return self->width / self->height;
+}
 
 /*
-
-_FORCE_INLINE_ static Vector2 linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real_t p_weight);
-_FORCE_INLINE_ Vector2 linear_interpolate(const Vector2 &p_to, real_t p_weight);
-_FORCE_INLINE_ Vector2 slerp(const Vector2 &p_to, real_t p_weight);
-Vector2 cubic_interpolate(const Vector2 &p_b, const Vector2 &p_pre_a, const Vector2 &p_post_b, real_t p_weight);
-Vector2 move_toward(const Vector2 &p_to, const real_t p_delta);
-
-Vector2 slide(const Vector2 &p_normal);
-Vector2 bounce(const Vector2 &p_normal);
-Vector2 reflect(const Vector2 &p_normal);
-
-bool is_equal_approx(const Vector2 &p_v);
-
-bool operator==(const Vector2 &p_vec2);
-bool operator!=(const Vector2 &p_vec2);
-
-bool operator<(const Vector2 &p_vec2) const {
-	return x == p_vec2.x ? (y < p_vec2.y) : (x < p_vec2.x);
-}
-bool operator>(const Vector2 &p_vec2) const {
-	return x == p_vec2.x ? (y > p_vec2.y) : (x > p_vec2.x);
-}
-bool operator<=(const Vector2 &p_vec2) const {
-	return x == p_vec2.x ? (y <= p_vec2.y) : (x < p_vec2.x);
-}
-bool operator>=(const Vector2 &p_vec2) const {
-	return x == p_vec2.x ? (y >= p_vec2.y) : (x > p_vec2.x);
-}
-
-Vector2 sign();
-Vector2 floor();
-Vector2 ceil();
-Vector2 round();
-Vector2 snapped(const Vector2 &p_by);
-real_t aspect() const {
-	return width / height;
-}
-
-operator String() const {
+String vector2_to_string(const Vector2 *self) const {
 	return String::num(x) + ", " + String::num(y);
 }
+*/
 
-_FORCE_INLINE_ Vector2(real_t p_x, real_t p_y) {
-	x = p_x;
-	y = p_y;
+//operator==
+static _FORCE_INLINE_ bool vector2_eq(const Vector2 *self, const Vector2 *p_vec2) {
+	return self->x == p_vec2->x && self->y == p_vec2->y;
 }
-_FORCE_INLINE_ Vector2() {
-	x = y = 0;
-}
-
-
-_FORCE_INLINE_ bool Vector2::operator==(const Vector2 &p_vec2) const {
-	return x == p_vec2.x && y == p_vec2.y;
-}
-_FORCE_INLINE_ bool Vector2::operator!=(const Vector2 &p_vec2) const {
-	return x != p_vec2.x || y != p_vec2.y;
+//operator!=
+static _FORCE_INLINE_ bool vector2_neq(const Vector2 *self, const Vector2 *p_vec2) {
+	return self->x != p_vec2->x || self->y != p_vec2->y;
 }
 
-Vector2 Vector2::linear_interpolate(const Vector2 &p_to, real_t p_weight) const {
-	Vector2 res = *this;
+static _FORCE_INLINE_ Vector2 vector2_linear_interpolate(const Vector2 *p_a, const Vector2 *p_b, real_t p_weight) {
+	Vector2 res = vector2_createv(p_a);
 
-	res.x += (p_weight * (p_to.x - x));
-	res.y += (p_weight * (p_to.y - y));
+	res.x += (p_weight * (p_b->x - p_a->x));
+	res.y += (p_weight * (p_b->y - p_a->y));
 
 	return res;
 }
 
-Vector2 Vector2::slerp(const Vector2 &p_to, real_t p_weight) const {
+static _FORCE_INLINE_ Vector2 vector2_vector2_slerp(const Vector2 *self, const Vector2 *p_to, real_t p_weight) {
 #ifdef MATH_CHECKS
-	ERR_FAIL_COND_V_MSG(!is_normalized(), Vector2(), "The start Vector2 must be normalized.");
+	//ERR_FAIL_COND_V_MSG(!is_normalized(), Vector2(), "The start Vector2 must be normalized.");
 #endif
-	real_t theta = angle_to(p_to);
-	return rotated(theta * p_weight);
+	real_t theta = vector2_angle_to(self, p_to);
+	return vector2_rotated(self, theta * p_weight);
 }
 
-
-
-Vector2 Vector2::linear_interpolate(const Vector2 &p_a, const Vector2 &p_b, real_t p_weight) {
-	Vector2 res = p_a;
-
-	res.x += (p_weight * (p_b.x - p_a.x));
-	res.y += (p_weight * (p_b.y - p_a.y));
-
-	return res;
+//operator<
+static _FORCE_INLINE_ bool vector2_lt(const Vector2 *self, const Vector2 *p_vec2) {
+	return self->x == p_vec2->x ? (self->y < p_vec2->y) : (self->x < p_vec2->x);
 }
+//operator>
+static _FORCE_INLINE_ bool vector2_gt(const Vector2 *self, const Vector2 *p_vec2) {
+	return self->x == p_vec2->x ? (self->y > p_vec2->y) : (self->x > p_vec2->x);
+}
+//operator<=
+static _FORCE_INLINE_ bool vector2_lte(const Vector2 *self, const Vector2 *p_vec2) {
+	return self->x == p_vec2->x ? (self->y <= p_vec2->y) : (self->x < p_vec2->x);
+}
+//operator>=
+static _FORCE_INLINE_ bool vector2_gte(const Vector2 *self, const Vector2 *p_vec2) {
+	return self->x == p_vec2->x ? (self->y >= p_vec2->y) : (self->x > p_vec2->x);
+}
+
+Vector2 vector2_sign(Vector2 *self);
+Vector2 vector2_floor(Vector2 *self);
+Vector2 vector2_ceil(Vector2 *self);
+Vector2 vector2_round(Vector2 *self);
+Vector2 vector2_snapped(Vector2 *self, const Vector2 *p_by);
+
+Vector2 vector2_cubic_interpolate(const Vector2 *self, const Vector2 *p_b, const Vector2 *p_pre_a, const Vector2 *p_post_b, real_t p_weight);
+Vector2 vector2_move_toward(const Vector2 *self, const Vector2 *p_to, const real_t p_delta);
+
+Vector2 vector2_slide(const Vector2 *self, const Vector2 *p_normal);
+Vector2 vector2_bounce(const Vector2 *self, const Vector2 *p_normal);
+Vector2 vector2_reflect(const Vector2 *self, const Vector2 *p_normal);
+
+bool vector2_is_equal_approx(const Vector2 *self, const Vector2 *p_v);
 
 typedef Vector2 Size2;
 typedef Vector2 Point2;
+
+/*
+
 
 // INTEGER STUFF
 
