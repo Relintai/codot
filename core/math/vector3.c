@@ -33,6 +33,32 @@
 //#include "core/math/basis.h"
 
 /*
+Vector3 vector3_limit_length(const Vector3 *vec) {
+	const real_t l = vector3_length(vec);
+	Vector3 v = *vec;
+
+	if (l > 0 && 1 < l) {
+		vector3_dev_eq();
+		v /= l;
+		v *= p_len;
+	}
+
+	return v;
+}
+
+Vector3 vector3_limit_lengthl(const Vector3 *vec, const real_t p_len) {
+	const real_t l = vector3_length(v);
+	Vector3 v = *vec;
+	if (l > 0 && p_len < l) {
+		v /= l;
+		v *= p_len;
+	}
+
+	return v;
+}
+*/
+
+/*
 void Vector3::rotate(const Vector3 &p_axis, real_t p_phi) {
 	*this = Basis(p_axis, p_phi).xform(*this);
 }
@@ -42,6 +68,10 @@ Vector3 Vector3::rotated(const Vector3 &p_axis, real_t p_phi) const {
 	r.rotate(p_axis, p_phi);
 	return r;
 }
+
+*/
+
+/*
 
 void Vector3::set_axis(int p_axis, real_t p_value) {
 	ERR_FAIL_INDEX(p_axis, 3);
@@ -60,17 +90,6 @@ void Vector3::snap(Vector3 p_val) {
 Vector3 Vector3::snapped(Vector3 p_val) const {
 	Vector3 v = *this;
 	v.snap(p_val);
-	return v;
-}
-
-Vector3 Vector3::limit_length(const real_t p_len) const {
-	const real_t l = length();
-	Vector3 v = *this;
-	if (l > 0 && p_len < l) {
-		v /= l;
-		v *= p_len;
-	}
-
 	return v;
 }
 
