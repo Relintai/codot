@@ -30,8 +30,10 @@
 
 #include "quat.h"
 
-#include "core/math/basis.h"
-#include "core/print_string.h"
+//#include "core/math/basis.h"
+//#include "core/print_string.h"
+
+/*
 
 real_t Quat::angle_to(const Quat &p_to) const {
 	real_t d = dot(p_to);
@@ -253,3 +255,4 @@ void Quat::set_axis_angle(const Vector3 &axis, const real_t &angle) {
 				cos_angle);
 	}
 }
+*/
