@@ -90,6 +90,12 @@ extern _FORCE_INLINE_ void vector3_set(Vector3 *self, real_t p_value_x, real_t p
 	self->z = p_value_z;
 }
 
+extern _FORCE_INLINE_ void vector3_setv(Vector3 *self, const Vector3 *other) {
+	self->x = other->x;
+	self->y = other->y;
+	self->z = other->z;
+}
+
 extern _FORCE_INLINE_ Vector3 vector3_create(real_t p_value_x, real_t p_value_y, real_t p_value_z) {
 	Vector3 v;
 

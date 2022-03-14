@@ -31,10 +31,12 @@
 #include "basis.h"
 
 #include "core/math/math_funcs.h"
-#include "core/print_string.h"
+//#include "core/print_string.h"
 
 #define cofac(row1, col1, row2, col2) \
 	(elements[row1][col1] * elements[row2][col2] - elements[row1][col2] * elements[row2][col1])
+
+/*
 
 void Basis::from_z(const Vector3 &p_z) {
 	if (Math::abs(p_z.z) > (real_t)Math_SQRT12) {
@@ -767,7 +769,7 @@ Quat Basis::get_quat() const {
 #ifdef MATH_CHECKS
 	ERR_FAIL_COND_V_MSG(!is_rotation(), Quat(), "Basis must be normalized in order to be casted to a Quaternion. Use get_rotation_quat() or call orthonormalized() if the Basis contains linearly independent vectors.");
 #endif
-	/* Allow getting a quaternion from an unnormalized transform */
+	// Allow getting a quaternion from an unnormalized transform 
 	Basis m = *this;
 	real_t trace = m.elements[0][0] + m.elements[1][1] + m.elements[2][2];
 	real_t temp[4];
@@ -861,11 +863,11 @@ void Basis::set_orthogonal_index(int p_index) {
 }
 
 void Basis::get_axis_angle(Vector3 &r_axis, real_t &r_angle) const {
-	/* checking this is a bad idea, because obtaining from scaled transform is a valid use case
-#ifdef MATH_CHECKS
-	ERR_FAIL_COND(!is_rotation());
-#endif
-*/
+	// checking this is a bad idea, because obtaining from scaled transform is a valid use case
+//#ifdef MATH_CHECKS
+//	ERR_FAIL_COND(!is_rotation());
+//#endif
+
 	real_t angle, x, y, z; // variables for result
 	real_t epsilon = 0.01; // margin to allow for rounding errors
 	real_t epsilon2 = 0.1; // margin to distinguish between 0 and 180 degrees
@@ -1021,3 +1023,5 @@ Basis Basis::slerp(const Basis &p_to, const real_t &p_weight) const {
 
 	return b;
 }
+
+*/
