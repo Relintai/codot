@@ -11,6 +11,13 @@ Yes, this is probably a very bad and dumb idea. However:
  
 Based on my fork of godot (https://github.com/Relintai/godot) Commit: c4864a0e5f73a375259503ea1485794a6aad6df7
 
+As a first step I think I'll just start by removing unnecessary things from godot, that I don't personally use / need.\
+Making the list below made me realize that just doing this should probably improve my life by quite a bit.
+
+Also I'll probably change things over time to a form where just switching to a C compiler is possible (kind of the list below, but in a lot more incremental fashion.), if I end up going as far as C.
+
+This repo might end up being a just a test bed, if I end up doing these they will probably happen here: https://github.com/Relintai/pandemonium_engine .
+
 Some remarks:
 
 After messing around for a bit, doing this by hand will take a lot longer that I first thought.
