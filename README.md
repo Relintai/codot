@@ -81,9 +81,9 @@ Pros:
 - Syntax highlighting for c is a lot simpler. More tools can do it well.
 - Lower level. You can optimize the code more, because it's easier to notice inefficiencies when working closer to metal. (Like unecessary type conversions.)
 - I'll get to know godot internals even better. Like 2d rendering.
-- Less bloat: I'll probably remove thing that I personally don't use. Like GLES3, Lightmapping (shadows would stay), VisualScipt, GDNative, more arcane asset loaders, probably assimp (stuff can be imported in vanilla godot and transferred. Maybe I could have a custom tool for it), etc.
+- Less bloat: I'll probably remove things that I personally don't use. Like GLES3, Lightmapping (shadows would stay), VisualScipt, GDNative, more arcane asset loaders, probably assimp (stuff can be imported in vanilla godot and transferred. Maybe I could have a custom tool for it), etc.
 - Less bloat: Compile times should decrease dramatically.
-- I'll probably remove thing that I personally don't use. Others might needs those. Less interest from others. -> I can just hack whatever I want. Like I can have simplified physics engines that only do collision detection and kinematic body moves, no dynamic physics objects, also can experiment with software rendering (really good to have for tools) etc.
+- I'll probably remove things that I personally don't use. Others might needs those. Less interest from others. -> I can just hack whatever I want. Like I can have simplified physics engines that only do collision detection and kinematic body moves, no dynamic physics objects, also can experiment with software rendering (really good to have for tools) etc.
 - I get to know C to probably it's fullest.
 
 Cons:
@@ -91,10 +91,10 @@ Cons:
 - More verbose / Lower level. Needs more manual work.
 - C++ is more accepted in gamedev -> more c++ devs. Also people will probably look for c++ engines first, because that's the current way of thinking.
 - Breaking compat with godot means no more updates.
-- I'll probably remove thing that I personally don't use. Others might needs those. Less interest from others.
+- I'll probably remove things that I personally don't use. Others might needs those. Less interest from others.
 
 Neutral:
-- Will likely never have RenderingDevice and Vulkan, and multiple window support. However based on what is going on in the world right now, vulkan is probably not worth having for quite a while. Only high end phones can use it righ now, and I don't expect adoption to increase anytime soon. In fact I think we'll actually see adoption go down, as people will just go back to using their older devices if the new ones break (because of both price, and stupid - kind of orwellian - decisions on the behalf of the manufacturers.). (Also on the desktop we have gpu shortages, and higer prices (even laptops) etc). Also I kind of like to mess with vertex color a lot more, so I don't really need to many advanced features anyway.
+- Will likely never have RenderingDevice and Vulkan, and multiple window support. However based on what is going on in the world right now, vulkan is probably not worth having for quite a while. Only high end phones can use it righ now, and I don't expect adoption to increase anytime soon. In fact I think we might actually see adoption go down, as people will just go back to using their older devices if the new ones break (because of both price, and stupid - kind of orwellian - decisions on the behalf of the manufacturers.). (Also on the desktop we have gpu shortages, and higer prices (even laptops) etc). Also I kind of like to mess with vertex color a lot more, so I don't really need to many advanced features anyway.
 
 Questions:
 - Performance? - Expectation: better
